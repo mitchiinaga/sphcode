@@ -1,0 +1,6 @@
+*.exe
+obj/
+x64/
+sph\.exe\.stackdump
+.vs/
+*.vcxproj.user
