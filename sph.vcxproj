@@ -120,6 +120,7 @@
     <ClCompile Include="src\core.cpp" />
     <ClCompile Include="src\logger.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\sph.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\core.hpp" />
@@ -128,6 +129,7 @@
     <ClInclude Include="include\kernel_function.hpp" />
     <ClInclude Include="include\logger.hpp" />
     <ClInclude Include="include\parameters.hpp" />
+    <ClInclude Include="include\sph.hpp" />
     <ClInclude Include="include\vector_type.hpp" />
     <ClInclude Include="include\wendland_kernel.hpp" />
   </ItemGroup>

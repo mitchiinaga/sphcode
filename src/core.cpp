@@ -11,6 +11,7 @@
 #include "logger.hpp"
 #include "parameters.hpp"
 #include "exception.hpp"
+#include "sph.hpp"
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -118,40 +119,51 @@ void Core::read_parameterfile(const char * filename)
 
 void Core::run()
 {
-//    auto p = std::make_unique<SPH>(&param);
-//    p->settings();
-//    output_particle(p.get());
-//    real t_out = outtime;
-//    const auto start = std::chrono::system_clock::now();
-//    real t = 0.0;
-//    real t_b = 0.0;
-//    int loop = 0;
-//    auto t_cout_i = start;
-//    while(t < endtime) {
-//        p->integrate();
-//        t = p->get_time();
-//        ++loop;
-//        
-//        // 1ïbÇ≤Ç∆Ç…âÊñ èoóÕÇ∑ÇÈ
-//        const auto t_cout_f = std::chrono::system_clock::now();
-//        const real t_cout_s = std::chrono::duration_cast<std::chrono::seconds>(t_cout_f - t_cout_i).count();
-//        if(t_cout_s >= 1.0) {
-//            WRITE_LOG << "loop: " << loop << ", time: " << t << ", dt: " << t - t_b << ", num: " << p->size();
-//            t_cout_i = std::chrono::system_clock::now();
-//        } else {
-//            WRITE_LOG_ONLY << "loop: " << loop << ", time: " << t << ", dt: " << t - t_b << ", num: " << p->size();
-//        }
-//
-//        t_b = t;
-//        if(t > t_out) {
-//            const int next_count = output_particle(p.get());
-//            t_out = outtime * next_count;
-//        }
-//    }
-//    const auto end = std::chrono::system_clock::now();
-//    const real calctime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    auto p = std::make_unique<SPH>(param);
+
+    real t = param->time.start;
+    real t_b = t;
+    const real t_end = param->time.end;
+    real t_out = param->time.output;
+    real t_ene = param->time.energy;
+
+    p->output_particles(t);
+    p->output_energy(t);
+
+    const auto start = std::chrono::system_clock::now();
+    auto t_cout_i = start;
+    int loop = 0;
+
+    while(t < t_end) {
+        p->integrate(&t);
+        ++loop;
+        
+        // 1ïbÇ≤Ç∆Ç…âÊñ èoóÕÇ∑ÇÈ
+        const auto t_cout_f = std::chrono::system_clock::now();
+        const real t_cout_s = std::chrono::duration_cast<std::chrono::seconds>(t_cout_f - t_cout_i).count();
+        if(t_cout_s >= 1.0) {
+            WRITE_LOG << "loop: " << loop << ", time: " << t << ", dt: " << t - t_b << ", num: " << p->get_particle_num();
+            t_cout_i = std::chrono::system_clock::now();
+        } else {
+            WRITE_LOG_ONLY << "loop: " << loop << ", time: " << t << ", dt: " << t - t_b << ", num: " << p->get_particle_num();
+        }
+
+        if(t > t_out) {
+            p->output_particles(t);
+            t_out += param->time.output;
+        }
+
+        if(t > t_ene) {
+            p->output_energy(t);
+            t_ene += param->time.energy;
+        }
+
+        t_b = t;
+    }
+    const auto end = std::chrono::system_clock::now();
+    const real calctime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     WRITE_LOG << "\ncalculation is finished";
-//    WRITE_LOG << "calclation time: " << calctime << " ms";
+    WRITE_LOG << "calclation time: " << calctime << " ms";
 }
 
 }
