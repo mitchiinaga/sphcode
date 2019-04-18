@@ -21,7 +21,7 @@ struct SPHParameters {
 
     struct ArtificialViscosity {
         real alpha;
-        bool use_balsala_switch;
+        bool use_balsara_switch;
         bool use_time_dependent_av;
     } av;
 

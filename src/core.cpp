@@ -12,6 +12,8 @@
 #include "parameters.hpp"
 #include "exception.hpp"
 #include "sph.hpp"
+#include "particle.hpp"
+#include "output.hpp"
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -31,7 +33,8 @@ Core::Core(int argc, char * argv[])
         read_parameterfile(argv[1]);
     }
 
-    Logger::open(output_dir);
+    Logger::open(m_output_dir);
+
 #ifdef _OPENMP
     WRITE_LOG << "Open MP is valid.";
     int num_threads;
@@ -47,88 +50,90 @@ Core::Core(int argc, char * argv[])
 #endif
     WRITE_LOG << "parameters";
 
-    WRITE_LOG << "output directory     = " << output_dir;
+    WRITE_LOG << "output directory     = " << m_output_dir;
 
     WRITE_LOG << "time";
-    WRITE_LOG << "* start time         = " << param->time.start;
-    WRITE_LOG << "* end time           = " << param->time.end;
-    WRITE_LOG << "* output time        = " << param->time.output;
-    WRITE_LOG << "* enerty output time = " << param->time.energy;
+    WRITE_LOG << "* start time         = " << m_param->time.start;
+    WRITE_LOG << "* end time           = " << m_param->time.end;
+    WRITE_LOG << "* output time        = " << m_param->time.output;
+    WRITE_LOG << "* enerty output time = " << m_param->time.energy;
 
     WRITE_LOG << "CFL condition";
-    WRITE_LOG << "* sound speed = " << param->cfl.sound;
-    WRITE_LOG << "* force       = " << param->cfl.force;
+    WRITE_LOG << "* sound speed = " << m_param->cfl.sound;
+    WRITE_LOG << "* force       = " << m_param->cfl.force;
 
     WRITE_LOG << "Artificial Viscosity";
-    WRITE_LOG << "* alpha = " << param->av.alpha;
-    if(param->av.use_balsala_switch) {
-        WRITE_LOG << "* use Balsala switch";
+    WRITE_LOG << "* alpha = " << m_param->av.alpha;
+    if(m_param->av.use_balsara_switch) {
+        WRITE_LOG << "* use Balsara switch";
     }
-    if(param->av.use_time_dependent_av) {
+    if(m_param->av.use_time_dependent_av) {
         WRITE_LOG << "* use time dependent AV";
     }
 
     WRITE_LOG << "Tree";
-    WRITE_LOG << "* Neighbor number      = " << param->tree.neighbor_number;
-    WRITE_LOG << "* max tree level       = " << param->tree.max_level;
-    WRITE_LOG << "* leaf particle number = " << param->tree.leaf_particle_num;
+    WRITE_LOG << "* Neighbor number      = " << m_param->tree.neighbor_number;
+    WRITE_LOG << "* max tree level       = " << m_param->tree.max_level;
+    WRITE_LOG << "* leaf particle number = " << m_param->tree.leaf_particle_num;
 
     WRITE_LOG << "Physics";
-    WRITE_LOG << "* gamma =" << param->physics.gamma;
+    WRITE_LOG << "* gamma =" << m_param->physics.gamma;
 
     WRITE_LOG;
+
+    m_output = std::make_unique<Output>();
 }
 
 void Core::read_parameterfile(const char * filename)
 {
     namespace pt = boost::property_tree;
 
-    param = std::make_shared<SPHParameters>();
+    m_param = std::make_shared<SPHParameters>();
 
     pt::ptree input;
     pt::read_json(filename, input);
 
-    output_dir = input.get<std::string>("outputDirectory");
+    m_output_dir = input.get<std::string>("outputDirectory");
 
     // time
-    param->time.start = input.get<real>("startTime", real(0));
-    param->time.end   = input.get<real>("endTime");
-    if(param->time.end < param->time.start) {
+    m_param->time.start = input.get<real>("startTime", real(0));
+    m_param->time.end   = input.get<real>("endTime");
+    if(m_param->time.end < m_param->time.start) {
         THROW_ERROR("endTime < startTime");
     }
-    param->time.output = input.get<real>("outputTime", (param->time.end - param->time.start) / 100);
-    param->time.energy = input.get<real>("energyTime", param->time.output);
+    m_param->time.output = input.get<real>("outputTime", (m_param->time.end - m_param->time.start) / 100);
+    m_param->time.energy = input.get<real>("energyTime", m_param->time.output);
 
     // CFL
-    param->cfl.sound = input.get<real>("cflSound", 0.3);
-    param->cfl.force = input.get<real>("cflForce", 0.25);
+    m_param->cfl.sound = input.get<real>("cflSound", 0.3);
+    m_param->cfl.force = input.get<real>("cflForce", 0.25);
 
     // Artificial Viscosity
-    param->av.alpha = input.get<real>("avAlpha", 1.0);
-    param->av.use_balsala_switch = input.get<bool>("useBalsalaSwitch", true);
-    param->av.use_time_dependent_av = input.get<bool>("useTimeDependentAV", false);
+    m_param->av.alpha = input.get<real>("avAlpha", 1.0);
+    m_param->av.use_balsara_switch = input.get<bool>("useBalsaraSwitch", true);
+    m_param->av.use_time_dependent_av = input.get<bool>("useTimeDependentAV", false);
 
     // Tree
-    param->tree.neighbor_number = input.get<int>("neighborNumber", 32);
-    param->tree.max_level = input.get<int>("maxTreeLevel", 20);
-    param->tree.leaf_particle_num = input.get<int>("leafParticleNumber", 1);
+    m_param->tree.neighbor_number = input.get<int>("neighborNumber", 32);
+    m_param->tree.max_level = input.get<int>("maxTreeLevel", 20);
+    m_param->tree.leaf_particle_num = input.get<int>("leafParticleNumber", 1);
 
     // Physics
-    param->physics.gamma = input.get<real>("gamma");
+    m_param->physics.gamma = input.get<real>("gamma");
 }
 
 void Core::run()
 {
-    auto p = std::make_unique<SPH>(param);
+    auto p = std::make_unique<SPH>(m_param);
 
-    real t = param->time.start;
+    real t = m_param->time.start;
     real t_b = t;
-    const real t_end = param->time.end;
-    real t_out = param->time.output;
-    real t_ene = param->time.energy;
+    const real t_end = m_param->time.end;
+    real t_out = m_param->time.output;
+    real t_ene = m_param->time.energy;
 
-    p->output_particles(t);
-    p->output_energy(t);
+    m_output->output_particle(p->get_particles(), p->get_particle_num(), t);
+    m_output->output_energy(p->get_particles(), p->get_particle_num(), t);
 
     const auto start = std::chrono::system_clock::now();
     auto t_cout_i = start;
@@ -149,13 +154,13 @@ void Core::run()
         }
 
         if(t > t_out) {
-            p->output_particles(t);
-            t_out += param->time.output;
+            m_output->output_particle(p->get_particles(), p->get_particle_num(), t);
+            t_out += m_param->time.output;
         }
 
         if(t > t_ene) {
-            p->output_energy(t);
-            t_ene += param->time.energy;
+            m_output->output_energy(p->get_particles(), p->get_particle_num(), t);
+            t_ene += m_param->time.energy;
         }
 
         t_b = t;

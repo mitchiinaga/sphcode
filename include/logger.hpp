@@ -12,16 +12,18 @@ class Logger {
     static std::string dir_name;
     static std::ofstream log_io;
     static bool open_flag;
-    std::ostringstream output_msg;
-    bool output_log_file_only;
+
+    std::ostringstream m_msg;
+    bool m_log_only;
 public:
-    Logger(bool log_only = false) : output_log_file_only(log_only) {}
+    Logger(bool log_only = false) : m_log_only(log_only) {}
     ~Logger() {
-        log_io << output_msg.str() << std::endl;
-        if(!output_log_file_only) {
-            std::cout << output_msg.str() << std::endl;
+        log_io << m_msg.str() << std::endl;
+        if(!m_log_only) {
+            std::cout << m_msg.str() << std::endl;
         }
     }
+
     static void open(const std::string & output_dir);
     static void open(const char * output_dir);
     static std::string get_dir_name() { return dir_name; }
@@ -29,7 +31,7 @@ public:
 
     template<typename T>
     Logger & operator<<(const T & msg) {
-        output_msg << msg;
+        m_msg << msg;
         return *this;
     }
 };
