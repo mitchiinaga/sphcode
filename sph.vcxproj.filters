@@ -71,5 +71,8 @@
     <ClInclude Include="include\timestep.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\openmp.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

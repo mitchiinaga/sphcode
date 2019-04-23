@@ -130,6 +130,7 @@
     <ClInclude Include="include\exception.hpp" />
     <ClInclude Include="include\kernel_function.hpp" />
     <ClInclude Include="include\logger.hpp" />
+    <ClInclude Include="include\openmp.hpp" />
     <ClInclude Include="include\output.hpp" />
     <ClInclude Include="include\parameters.hpp" />
     <ClInclude Include="include\particle.hpp" />
