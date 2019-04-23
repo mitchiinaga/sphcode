@@ -21,6 +21,8 @@ class SPH {
     TimeStep m_timestep;
 
     void initialize();
+    void predict(const real dt);
+    void correct(const real dt);
 public:
     SPH(std::shared_ptr<SPHParameters> param);
     int get_particle_num();
