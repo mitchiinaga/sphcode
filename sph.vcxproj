@@ -122,6 +122,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\output.cpp" />
     <ClCompile Include="src\sph.cpp" />
+    <ClCompile Include="src\timestep.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\core.hpp" />
@@ -133,6 +134,7 @@
     <ClInclude Include="include\parameters.hpp" />
     <ClInclude Include="include\particle.hpp" />
     <ClInclude Include="include\sph.hpp" />
+    <ClInclude Include="include\timestep.hpp" />
     <ClInclude Include="include\vector_type.hpp" />
     <ClInclude Include="include\wendland_kernel.hpp" />
   </ItemGroup>
