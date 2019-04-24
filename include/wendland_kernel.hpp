@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <cassert>
 
 #include "defines.hpp"
 #include "kernel_function.hpp"
@@ -12,11 +13,11 @@
 // Wendland (1995), Dehnen & Aly (2012)
 namespace sph
 {
-namespace wendland
-{
 
 // Wendland C4 Kernel
-#if DIM == 2
+#if DIM == 1
+    constexpr real sigma = 0.0;
+#elif DIM == 2
     constexpr real sigma = 9.0 / M_PI;
 #else
     constexpr real sigma = 495. / (32 * M_PI);
@@ -24,6 +25,11 @@ namespace wendland
 
 class C4Kernel : public KernelFunction {
 public:
+    C4Kernel()
+    {
+        assert(DIM != 1);
+    }
+
     real w(const real r, const real h)
     {
         const real q = r / h;
@@ -38,5 +44,4 @@ public:
     }
 };
 
-}
 }
