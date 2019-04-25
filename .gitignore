@@ -6,3 +6,7 @@ sph\.exe\.stackdump
 *.vcxproj.user
 
 parameters\.json
+
+test/kernel_test/spline\.dat
+
+test/kernel_test/wendland\.dat

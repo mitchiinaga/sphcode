@@ -12,18 +12,19 @@
 // cubic spline kernel
 namespace sph
 {
-
+namespace Spline
+{
 #if DIM == 1
-    constexpr real sigma = 2.0 / 3.0;
+    constexpr real sigma_cubic = 2.0 / 3.0;
 #elif DIM == 2
-    constexpr real sigma = 10.0 / (7.0 * M_PI);
+    constexpr real sigma_cubic = 10.0 / (7.0 * M_PI);
 #else
-    constexpr real sigma = 1.0 / M_PI;
+    constexpr real sigma_cubic = 1.0 / M_PI;
 #endif
 
-class CubicSpline : public KernelFunction {
+class Cubic : public KernelFunction {
 public:
-    CubicSpline()
+    Cubic()
     {
     }
 
@@ -31,16 +32,17 @@ public:
     {
         const real h_ = h * 0.5;
         const real q = r / h_;
-        return sigma / powh(h_) * (0.25 * pow3(0.5 * (2.0 - q + std::abs(2.0 - q))) - pow3(0.5 * (1.0 - q + std::abs(1.0 - q))));
+        return sigma_cubic / powh(h_) * (0.25 * pow3(0.5 * (2.0 - q + std::abs(2.0 - q))) - pow3(0.5 * (1.0 - q + std::abs(1.0 - q))));
     }
 
     vec_t dw(const vec_t &rij, const real r, const real h)
     {
         const real h_ = h * 0.5;
         const real q = r / h_;
-        const real c = -sigma / (powh(h_) * h_ * r) * (0.75 * sqr(0.5 * (2.0 - q + std::abs(2.0 - q))) - 3.0 * sqr(0.5 * (1.0 - q + std::abs(1.0 - q))));
+        const real c = -sigma_cubic / (powh(h_) * h_ * r) * (0.75 * sqr(0.5 * (2.0 - q + std::abs(2.0 - q))) - 3.0 * sqr(0.5 * (1.0 - q + std::abs(1.0 - q))));
         return rij * c;
     }
 };
+}
 
 }
