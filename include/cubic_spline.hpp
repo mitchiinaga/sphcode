@@ -38,9 +38,8 @@ public:
     {
         const real h_ = h * 0.5;
         const real q = r / h_;
-//        const real cc = -56.0 / 3.0 * sigma / (powh(h) * sqr(h)) * pow5(0.5 * (1.0 - q + std::abs(1.0 - q))) * (1.0 + 5.0 * q);
-//        return rij * cc;
-        return rij;
+        const real c = -sigma / (powh(h_) * h_ * r) * (0.75 * sqr(0.5 * (2.0 - q + std::abs(2.0 - q))) - 3.0 * sqr(0.5 * (1.0 - q + std::abs(1.0 - q))));
+        return rij * c;
     }
 };
 

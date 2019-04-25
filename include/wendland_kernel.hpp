@@ -39,8 +39,8 @@ public:
     vec_t dw(const vec_t &rij, const real r, const real h)
     {
         const real q = r / h;
-        const real cc = -56.0 / 3.0 * sigma / (powh(h) * sqr(h)) * pow5(0.5 * (1.0 - q + std::abs(1.0 - q))) * (1.0 + 5.0 * q);
-        return rij * cc;
+        const real c = -56.0 / 3.0 * sigma / (powh(h) * sqr(h)) * pow5(0.5 * (1.0 - q + std::abs(1.0 - q))) * (1.0 + 5.0 * q);
+        return rij * c;
     }
 };
 
