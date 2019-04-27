@@ -6,6 +6,7 @@
 #include "defines.hpp"
 
 #include "timestep.hpp"
+#include "pre_interaction.hpp"
 
 namespace sph
 {
@@ -18,7 +19,8 @@ class SPH {
     int                            m_particle_num;
 
     // modules
-    TimeStep m_timestep;
+    TimeStep       m_timestep;
+    PreInteraction m_pre;
 
     void initialize();
     void predict(const real dt);

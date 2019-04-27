@@ -72,12 +72,12 @@ Core::Core(int argc, char * argv[])
     }
 
     WRITE_LOG << "Tree";
-    WRITE_LOG << "* Neighbor number      = " << m_param->tree.neighbor_number;
     WRITE_LOG << "* max tree level       = " << m_param->tree.max_level;
     WRITE_LOG << "* leaf particle number = " << m_param->tree.leaf_particle_num;
 
     WRITE_LOG << "Physics";
-    WRITE_LOG << "* gamma =" << m_param->physics.gamma;
+    WRITE_LOG << "* Neighbor number = " << m_param->physics.neighbor_number;
+    WRITE_LOG << "* gamma           =" << m_param->physics.gamma;
 
     WRITE_LOG;
 
@@ -114,11 +114,11 @@ void Core::read_parameterfile(const char * filename)
     m_param->av.use_time_dependent_av = input.get<bool>("useTimeDependentAV", false);
 
     // Tree
-    m_param->tree.neighbor_number = input.get<int>("neighborNumber", 32);
     m_param->tree.max_level = input.get<int>("maxTreeLevel", 20);
     m_param->tree.leaf_particle_num = input.get<int>("leafParticleNumber", 1);
 
     // Physics
+    m_param->physics.neighbor_number = input.get<int>("neighborNumber", 32);
     m_param->physics.gamma = input.get<real>("gamma");
 }
 

@@ -26,12 +26,12 @@ struct SPHParameters {
     } av;
 
     struct Tree {
-        int neighbor_number;
         int max_level;
         int leaf_particle_num;
     } tree;
 
     struct Physics {
+        int neighbor_number;
         real gamma;
     } physics;
 };

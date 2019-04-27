@@ -121,6 +121,7 @@
     <ClCompile Include="src\logger.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\output.cpp" />
+    <ClCompile Include="src\pre_interaction.cpp" />
     <ClCompile Include="src\sph.cpp" />
     <ClCompile Include="src\timestep.cpp" />
   </ItemGroup>
@@ -131,10 +132,12 @@
     <ClInclude Include="include\exception.hpp" />
     <ClInclude Include="include\kernel_function.hpp" />
     <ClInclude Include="include\logger.hpp" />
+    <ClInclude Include="include\module.hpp" />
     <ClInclude Include="include\openmp.hpp" />
     <ClInclude Include="include\output.hpp" />
     <ClInclude Include="include\parameters.hpp" />
     <ClInclude Include="include\particle.hpp" />
+    <ClInclude Include="include\pre_interaction.hpp" />
     <ClInclude Include="include\sph.hpp" />
     <ClInclude Include="include\timestep.hpp" />
     <ClInclude Include="include\vector_type.hpp" />

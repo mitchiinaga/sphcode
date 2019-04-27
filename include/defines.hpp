@@ -4,7 +4,7 @@
 #include <string>
 #include <cstdlib>
 
-#define DIM 2
+#define DIM 1
 typedef double real;
 
 inline real inner_product(const real (&v1)[DIM], const real (&v2)[DIM])

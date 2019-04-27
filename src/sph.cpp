@@ -10,12 +10,13 @@ namespace sph
 SPH::SPH(std::shared_ptr<SPHParameters> param)
 {
     m_timestep.initialize(param);
+    m_pre.initialize(param);
 }
 
 void SPH::initialize()
 {
     // calc_tree();
-    // pre_interaction();
+    m_pre.calculation(m_particles.get(), m_particle_num);
     // calc_force();
 }
 
@@ -24,7 +25,7 @@ void SPH::integrate(real * time)
     real const dt = m_timestep.calculation(m_particles.get(), m_particle_num);
     predict(dt);
     // calc_tree();
-    // pre_interaction();
+    m_pre.calculation(m_particles.get(), m_particle_num);
     // calc_force();
     correct(dt);
     *time += dt;
