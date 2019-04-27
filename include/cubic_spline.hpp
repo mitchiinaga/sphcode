@@ -42,6 +42,14 @@ public:
         const real c = -sigma_cubic / (powh(h_) * h_ * r) * (0.75 * sqr(0.5 * (2.0 - q + std::abs(2.0 - q))) - 3.0 * sqr(0.5 * (1.0 - q + std::abs(1.0 - q))));
         return rij * c;
     }
+
+    real dhw(const real r, const real h)
+    {
+        const real h_ = h * 0.5;
+        const real q = r / h_;
+        return sigma_cubic / (powh(h_) * h_) * (sqr((std::abs(2.0 - q) + 2.0 - q) * 0.5) * ((3. + DIM) * 0.25 * q - 0.5 * DIM)
+            + sqr((std::abs(1.0 - q) + 1.0 - q) * 0.5) * ((-3.0 - DIM) * q + DIM));
+    }
 };
 }
 

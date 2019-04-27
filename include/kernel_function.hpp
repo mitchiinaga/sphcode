@@ -17,8 +17,9 @@ inline real powh(const real h) {
 
 class KernelFunction {
 public:
-    virtual real w(const real r, const real h) = 0;
-    virtual vec_t dw(const vec_t &rij, const real r, const real h) = 0;
+    virtual real w(const real r, const real h) = 0;                     // W(r,h)
+    virtual vec_t dw(const vec_t &rij, const real r, const real h) = 0; // grad W(r,h)
+    virtual real dhw(const real r, const real h) = 0;                   // dW(r,h)/dh
 };
 
 }
