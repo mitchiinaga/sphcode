@@ -1,6 +1,7 @@
 #pragma once
 
 #include "module.hpp"
+#include "distance.hpp"
 
 namespace sph
 {
@@ -8,10 +9,11 @@ struct SPHParameters;
 class SPHParticle;
 
 class PreInteraction : public Module {
-    bool use_balsara_switch;
-    bool use_time_dependent_av;
-    real gamma;
-    int neighbor_number;
+    bool     m_use_balsara_switch;
+    bool     m_use_time_dependent_av;
+    real     m_gamma;
+    int      m_neighbor_number;
+    Distance m_distance;
 
     int exhaustive_search(
         SPHParticle & p_i,

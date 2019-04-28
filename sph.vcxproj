@@ -129,6 +129,7 @@
     <ClInclude Include="include\core.hpp" />
     <ClInclude Include="include\cubic_spline.hpp" />
     <ClInclude Include="include\defines.hpp" />
+    <ClInclude Include="include\distance.hpp" />
     <ClInclude Include="include\exception.hpp" />
     <ClInclude Include="include\kernel_function.hpp" />
     <ClInclude Include="include\logger.hpp" />
