@@ -18,7 +18,7 @@ private:\
     type m_##name
 
 class Simulation {
-    ADD_MEMBER(std::shared_ptr<SPHParticle[]>, particles);
+    ADD_MEMBER(std::shared_ptr<SPHParticle>, particles);
     ADD_MEMBER(int, particle_num);
     ADD_MEMBER(real, time);
     ADD_MEMBER(real, dt);

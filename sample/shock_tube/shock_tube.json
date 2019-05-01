@@ -1,0 +1,9 @@
+{
+    "outputDirectory" : "sample/shock_tube/results",
+    "endTime" : 0.2,
+    "avAlpha" : 1.0,
+    "neighborNumber" : 7,
+    "gamma" : 1.4,
+    "kernel" : "cubic_spline",
+    "N" : 100
+}

@@ -16,6 +16,9 @@
     <Filter Include="Header Files\kernel">
       <UniqueIdentifier>{889bba9e-e8ba-48ca-a4ce-fd77da855a6f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\sample">
+      <UniqueIdentifier>{3f5c3c31-1757-4dce-8305-b86596934f62}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -41,6 +44,9 @@
     </ClCompile>
     <ClCompile Include="src\fluid_force.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sample\shock_tube\shock_tube.cpp">
+      <Filter>Source Files\sample</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -6,3 +6,4 @@ sph\.exe\.stackdump
 *.vcxproj.user
 
 parameters\.json
+sample/shock_tube/results/

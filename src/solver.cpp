@@ -96,7 +96,16 @@ void Solver::read_parameterfile(const char * filename)
     m_param = std::make_shared<SPHParameters>();
 
     pt::ptree input;
-    pt::read_json(filename, input);
+
+    std::string name_str = filename;
+    if(name_str == "shock_tube") {
+        pt::read_json("sample/shock_tube/shock_tube.json", input);
+        m_sample = Sample::ShockTube;
+        m_sample_parameters["N"] = input.get<int>("N", 100);
+    } else {
+        pt::read_json(filename, input);
+        m_sample = Sample::DoNotUse;
+    }
 
     m_output_dir = input.get<std::string>("outputDirectory");
 
@@ -140,6 +149,7 @@ void Solver::read_parameterfile(const char * filename)
 void Solver::run()
 {
     initialize();
+    assert(m_sim->get_particles().get());
 
     const real t_end = m_param->time.end;
     real t_out = m_param->time.output;
@@ -190,9 +200,22 @@ void Solver::initialize()
 {
     m_sim = std::make_shared<Simulation>(m_param);
 
+    make_initial_condition();
+
     m_timestep.initialize(m_param);
     m_pre.initialize(m_param);
     m_fforce.initialize(m_param);
+
+    SPHParticle * p = m_sim->get_particles().get();
+    const int num = m_sim->get_particle_num();
+    assert(p);
+    const real alpha = m_param->av.alpha;
+#pragma omp parallel for
+    for(int i = 0; i < num; ++i) {
+        p[i].alpha = alpha;
+        p[i].balsara = 1.0;
+    }
+
     // calc_tree();
     m_pre.calculation(m_sim);
     m_fforce.calculation(m_sim);
@@ -242,6 +265,17 @@ void Solver::correct()
     for(int i = 0; i < num; ++i) {
         p[i].vel = p[i].vel_p + p[i].acc * (0.5 * dt);
         p[i].ene = p[i].ene_p + p[i].dene * (0.5 * dt);
+    }
+}
+
+void Solver::make_initial_condition()
+{
+    if(m_sample == Sample::ShockTube) {
+        make_shock_tube();
+    } else if(m_sample == Sample::DoNotUse) {
+        // make distribution
+    } else {
+        THROW_ERROR("unknown sample type.");
     }
 }
 

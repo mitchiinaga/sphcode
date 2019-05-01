@@ -7,6 +7,7 @@
 #include "distance.hpp"
 #include "openmp.hpp"
 #include "kernel/kernel_function.hpp"
+#include "exception.hpp"
 
 namespace sph
 {
@@ -62,6 +63,9 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
         p_i.pres = (m_gamma - 1.0) * dens_i * p_i.ene;
         p_i.sound = std::sqrt(m_gamma * p_i.pres / dens_i);
     }
+
+    // signal velocity
+    THROW_ERROR("signal velocity");
 }
 
 int PreInteraction::exhaustive_search(
