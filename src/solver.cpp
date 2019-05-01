@@ -192,9 +192,10 @@ void Solver::initialize()
 
     m_timestep.initialize(m_param);
     m_pre.initialize(m_param);
+    m_fforce.initialize(m_param);
     // calc_tree();
     m_pre.calculation(m_sim);
-    // calc_force();
+    m_fforce.calculation(m_sim);
 }
 
 void Solver::integrate()
@@ -203,8 +204,8 @@ void Solver::integrate()
 
     predict();
     // calc_tree();
-//    m_pre.calculation(m_particles.get(), m_particle_num);
-    // calc_force();
+    m_pre.calculation(m_sim);
+    m_fforce.calculation(m_sim);
     correct();
 }
 

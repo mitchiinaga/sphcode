@@ -8,6 +8,7 @@
 #include "defines.hpp"
 #include "timestep.hpp"
 #include "pre_interaction.hpp"
+#include "fluid_force.hpp"
 
 namespace sph
 {
@@ -25,6 +26,7 @@ class Solver {
     // modules
     TimeStep       m_timestep;
     PreInteraction m_pre;
+    FluidForce     m_fforce;
 
     void read_parameterfile(const char * filename);
     void initialize();

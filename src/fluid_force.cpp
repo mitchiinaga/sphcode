@@ -31,18 +31,36 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
         int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, distance);
 
         // fluid force
-        const vec_t & pos_i = p_i.pos;
+        const vec_t & r_i = p_i.pos;
+        const vec_t & v_i = p_i.vel;
+        const real p_per_rho2_i = p_i.pres / sqr(p_i.dens);
+        const real h_i = p_i.sml;
+
+        vec_t acc(0.0);
+        real dene = 0.0;
+
         for(int n = 0; n < n_neighbor; ++n) {
             int const j = neighbor_list[n];
             auto & p_j = particles[j];
-            const vec_t r_ij = distance->calc_r_ij(pos_i, p_j.pos);
+            const vec_t r_ij = distance->calc_r_ij(r_i, p_j.pos);
             const real r = abs(r_ij);
 
-            if(r >= p_i.sml) {
-                break;
+            if(r >= std::max(h_i, p_j.sml) || r == 0.0) {
+                continue;
             }
+
+            const vec_t dw_i = kernel->dw(r_ij, r, h_i);
+            const vec_t dw_j = kernel->dw(r_ij, r, p_j.sml);
+            const vec_t dw_ij = (dw_i + dw_j) * 0.5;
+
+            const real pi_ij = artificial_viscosity(p_i, p_j);
+
+            acc -= dw_ij * (p_j.mass * (p_per_rho2_i + p_j.pres / sqr(p_j.dens) + pi_ij));
+            dene += p_j.mass * (p_per_rho2_i + 0.5 * pi_ij) * inner_product(v_i - p_j.vel, dw_ij);
         }
 
+        p_i.acc = acc;
+        p_i.dene = dene;
     }
 }
 
