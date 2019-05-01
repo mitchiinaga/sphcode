@@ -121,6 +121,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\output.cpp" />
     <ClCompile Include="src\pre_interaction.cpp" />
+    <ClCompile Include="src\simulation.cpp" />
     <ClCompile Include="src\solver.cpp" />
     <ClCompile Include="src\timestep.cpp" />
   </ItemGroup>

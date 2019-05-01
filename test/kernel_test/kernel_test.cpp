@@ -1,7 +1,7 @@
 ﻿#include <iostream>
 
-#include "wendland_kernel.hpp"
-#include "cubic_spline.hpp"
+#include "kernel/cubic_spline.hpp"
+#include "kernel/wendland_kernel.hpp"
 
 int main()
 {

@@ -4,6 +4,11 @@
 
 namespace sph
 {
+enum struct KernelType {
+    CUBIC_SPLINE,
+    WENDLAND,
+    UNKNOWN,
+};
 
 struct SPHParameters {
 
@@ -34,6 +39,8 @@ struct SPHParameters {
         int neighbor_number;
         real gamma;
     } physics;
+
+    KernelType kernel;
 };
 
 }

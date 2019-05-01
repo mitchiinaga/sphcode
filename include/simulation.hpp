@@ -5,16 +5,17 @@
 namespace sph
 {
 
+struct SPHParameters;
 class SPHParticle;
 class KernelFunction;
 class Distance;
 
 #define ADD_MEMBER(type, name)\
 public:\
-    void set_##name(type v) { name = v; }\
-    type & get_##name() { return name; }\
+    void set_##name(type v) { m_##name = v; }\
+    type & get_##name() { return m_##name; }\
 private:\
-    type name
+    type m_##name
 
 class Simulation {
     ADD_MEMBER(std::shared_ptr<SPHParticle[]>, particles);
@@ -26,10 +27,8 @@ class Simulation {
     ADD_MEMBER(std::shared_ptr<Distance>, distance);
 
 public:
-    void update_time()
-    {
-        time += dt;
-    }
+    Simulation(std::shared_ptr<SPHParameters> param);
+    void update_time();
 };
 
 #undef ADD_MEMBER

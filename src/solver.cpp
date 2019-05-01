@@ -75,6 +75,15 @@ Solver::Solver(int argc, char * argv[])
     WRITE_LOG << "* Neighbor number = " << m_param->physics.neighbor_number;
     WRITE_LOG << "* gamma           =" << m_param->physics.gamma;
 
+    WRITE_LOG << "Kernel";
+    if(m_param->kernel == KernelType::CUBIC_SPLINE) {
+        WRITE_LOG << "* Cubic Spline";
+    } else if(m_param->kernel == KernelType::WENDLAND) {
+        WRITE_LOG << "* Wendland";
+    } else {
+        THROW_ERROR("kernel is unknown.");
+    }
+
     WRITE_LOG;
 
     m_output = std::make_shared<Output>();
@@ -116,13 +125,21 @@ void Solver::read_parameterfile(const char * filename)
     // Physics
     m_param->physics.neighbor_number = input.get<int>("neighborNumber", 32);
     m_param->physics.gamma = input.get<real>("gamma");
+
+    // Kernel
+    std::string kernel_name = input.get<std::string>("kernel", "cubic_spline");
+    if(kernel_name == "cubic_spline") {
+        m_param->kernel = KernelType::CUBIC_SPLINE;
+    } else if(kernel_name == "wendland") {
+        m_param->kernel = KernelType::WENDLAND;
+    } else {
+        THROW_ERROR("kernel is unknown.");
+    }
 }
 
 void Solver::run()
 {
     initialize();
-
-    m_sim->set_time(m_param->time.start);
 
     const real t_end = m_param->time.end;
     real t_out = m_param->time.output;
@@ -171,7 +188,7 @@ void Solver::run()
 
 void Solver::initialize()
 {
-    m_sim = std::make_shared<Simulation>();
+    m_sim = std::make_shared<Simulation>(m_param);
 
     m_timestep.initialize(m_param);
     m_pre.initialize(m_param);
