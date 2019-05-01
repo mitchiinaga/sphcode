@@ -126,11 +126,12 @@
     <ClCompile Include="src\timestep.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\cubic_spline.hpp" />
     <ClInclude Include="include\defines.hpp" />
     <ClInclude Include="include\distance.hpp" />
     <ClInclude Include="include\exception.hpp" />
-    <ClInclude Include="include\kernel_function.hpp" />
+    <ClInclude Include="include\kernel\cubic_spline.hpp" />
+    <ClInclude Include="include\kernel\kernel_function.hpp" />
+    <ClInclude Include="include\kernel\wendland_kernel.hpp" />
     <ClInclude Include="include\logger.hpp" />
     <ClInclude Include="include\module.hpp" />
     <ClInclude Include="include\openmp.hpp" />
@@ -142,7 +143,6 @@
     <ClInclude Include="include\solver.hpp" />
     <ClInclude Include="include\timestep.hpp" />
     <ClInclude Include="include\vector_type.hpp" />
-    <ClInclude Include="include\wendland_kernel.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

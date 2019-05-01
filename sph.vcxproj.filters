@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Header Files\kernel">
+      <UniqueIdentifier>{889bba9e-e8ba-48ca-a4ce-fd77da855a6f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -44,16 +47,10 @@
     <ClInclude Include="include\exception.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\kernel_function.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\logger.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\vector_type.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\wendland_kernel.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\parameters.hpp">
@@ -71,9 +68,6 @@
     <ClInclude Include="include\openmp.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\cubic_spline.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\pre_interaction.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -88,6 +82,15 @@
     </ClInclude>
     <ClInclude Include="include\solver.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kernel\cubic_spline.hpp">
+      <Filter>Header Files\kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kernel\kernel_function.hpp">
+      <Filter>Header Files\kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kernel\wendland_kernel.hpp">
+      <Filter>Header Files\kernel</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,6 +6,7 @@
 #include "simulation.hpp"
 #include "distance.hpp"
 #include "openmp.hpp"
+#include "kernel/kernel_function.hpp"
 
 namespace sph
 {
@@ -26,6 +27,7 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
     auto * particles = sim->get_particles().get();
     auto * distance = sim->get_distance().get();
     const int num = sim->get_particle_num();
+    auto * kernel = sim->get_kernel().get();
 
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {
@@ -54,8 +56,12 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
                 break;
             }
 
-            dens_i += p_j.mass;
+            dens_i += p_j.mass * kernel->w(r, p_i.sml);
         }
+
+        p_i.dens = dens_i;
+        p_i.pres = (m_gamma - 1.0) * dens_i * p_i.ene;
+        p_i.sound = std::sqrt(m_gamma * p_i.pres / dens_i);
     }
 }
 

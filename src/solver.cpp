@@ -218,11 +218,11 @@ void Solver::predict(const real dt)
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {
         // k -> k+1/2
-        p[i].vel_i = p[i].vel + p[i].acc * (0.5 * dt);
-        p[i].ene_i = p[i].ene + p[i].dene * (0.5 * dt);
+        p[i].vel_p = p[i].vel + p[i].acc * (0.5 * dt);
+        p[i].ene_p = p[i].ene + p[i].dene * (0.5 * dt);
 
         // k -> k+1
-        p[i].pos += p[i].vel_i * dt;
+        p[i].pos += p[i].vel_p * dt;
         p[i].vel += p[i].acc * dt;
         p[i].ene += p[i].dene * dt;
     }
@@ -236,8 +236,8 @@ void Solver::correct(const real dt)
 
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {
-        p[i].vel = p[i].vel_i + p[i].acc * (0.5 * dt);
-        p[i].ene = p[i].ene_i + p[i].dene * (0.5 * dt);
+        p[i].vel = p[i].vel_p + p[i].acc * (0.5 * dt);
+        p[i].ene = p[i].ene_p + p[i].dene * (0.5 * dt);
     }
 }
 
