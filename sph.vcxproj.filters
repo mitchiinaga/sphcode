@@ -18,13 +18,7 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\core.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\logger.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\sph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\output.cpp">
@@ -36,11 +30,11 @@
     <ClCompile Include="src\pre_interaction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\solver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\core.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\defines.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -60,9 +54,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\parameters.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\sph.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\particle.hpp">
@@ -87,6 +78,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\distance.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\simulation.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\solver.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

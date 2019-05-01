@@ -1,19 +1,15 @@
+#include <cassert>
+
 #include <iostream>
-#include <string>
-#include <cstdlib>
 #include <chrono>
 
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-
-#include "core.hpp"
-#include "vector_type.hpp"
-#include "logger.hpp"
+#include "solver.hpp"
 #include "parameters.hpp"
-#include "exception.hpp"
-#include "sph.hpp"
 #include "particle.hpp"
+#include "logger.hpp"
+#include "exception.hpp"
 #include "output.hpp"
+#include "simulation.hpp"
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -22,7 +18,7 @@
 namespace sph
 {
 
-Core::Core(int argc, char * argv[])
+Solver::Solver(int argc, char * argv[])
 {
     std::cout << "--------------SPH simulation-------------\n\n";
     if(argc == 1) {
@@ -84,7 +80,7 @@ Core::Core(int argc, char * argv[])
     m_output = std::make_unique<Output>();
 }
 
-void Core::read_parameterfile(const char * filename)
+void Solver::read_parameterfile(const char * filename)
 {
     namespace pt = boost::property_tree;
 
@@ -122,9 +118,9 @@ void Core::read_parameterfile(const char * filename)
     m_param->physics.gamma = input.get<real>("gamma");
 }
 
-void Core::run()
+void Solver::run()
 {
-    auto p = std::make_unique<SPH>(m_param);
+    initialize();
 
     real t = m_param->time.start;
     real t_b = t;
@@ -132,34 +128,34 @@ void Core::run()
     real t_out = m_param->time.output;
     real t_ene = m_param->time.energy;
 
-    m_output->output_particle(p->get_particles(), p->get_particle_num(), t);
-    m_output->output_energy(p->get_particles(), p->get_particle_num(), t);
+//    m_output->output_particle(p->get_particles(), p->get_particle_num(), t);
+//    m_output->output_energy(p->get_particles(), p->get_particle_num(), t);
 
     const auto start = std::chrono::system_clock::now();
     auto t_cout_i = start;
     int loop = 0;
 
     while(t < t_end) {
-        p->integrate(&t);
+        integrate(&t);
         ++loop;
         
         // 1ïbÇ≤Ç∆Ç…âÊñ èoóÕÇ∑ÇÈ
         const auto t_cout_f = std::chrono::system_clock::now();
         const real t_cout_s = std::chrono::duration_cast<std::chrono::seconds>(t_cout_f - t_cout_i).count();
         if(t_cout_s >= 1.0) {
-            WRITE_LOG << "loop: " << loop << ", time: " << t << ", dt: " << t - t_b << ", num: " << p->get_particle_num();
+//            WRITE_LOG << "loop: " << loop << ", time: " << t << ", dt: " << t - t_b << ", num: " << p->get_particle_num();
             t_cout_i = std::chrono::system_clock::now();
         } else {
-            WRITE_LOG_ONLY << "loop: " << loop << ", time: " << t << ", dt: " << t - t_b << ", num: " << p->get_particle_num();
+//            WRITE_LOG_ONLY << "loop: " << loop << ", time: " << t << ", dt: " << t - t_b << ", num: " << p->get_particle_num();
         }
 
         if(t > t_out) {
-            m_output->output_particle(p->get_particles(), p->get_particle_num(), t);
+//            m_output->output_particle(p->get_particles(), p->get_particle_num(), t);
             t_out += m_param->time.output;
         }
 
         if(t > t_ene) {
-            m_output->output_energy(p->get_particles(), p->get_particle_num(), t);
+//            m_output->output_energy(p->get_particles(), p->get_particle_num(), t);
             t_ene += m_param->time.energy;
         }
 
@@ -169,6 +165,60 @@ void Core::run()
     const real calctime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     WRITE_LOG << "\ncalculation is finished";
     WRITE_LOG << "calclation time: " << calctime << " ms";
+}
+
+void Solver::initialize()
+{
+    m_sim = std::make_shared<Simulation>();
+
+    m_timestep.initialize(m_param);
+    m_pre.initialize(m_param);
+    // calc_tree();
+    m_pre.calculation(m_sim->particles.get(), m_sim->particle_num);
+    // calc_force();
+}
+
+void Solver::integrate(real * time)
+{
+    real const dt = m_timestep.calculation(m_sim->particles.get(), m_sim->particle_num);
+    predict(dt);
+    // calc_tree();
+//    m_pre.calculation(m_particles.get(), m_particle_num);
+    // calc_force();
+    correct(dt);
+    *time += dt;
+}
+
+void Solver::predict(const real dt)
+{
+    SPHParticle * p = m_sim->particles.get();
+    const int num = m_sim->particle_num;
+    assert(p);
+
+#pragma omp parallel for
+    for(int i = 0; i < num; ++i) {
+        // k -> k+1/2
+        p[i].vel_i = p[i].vel + p[i].acc * (0.5 * dt);
+        p[i].ene_i = p[i].ene + p[i].dene * (0.5 * dt);
+
+        // k -> k+1
+        p[i].pos += p[i].vel_i * dt;
+        p[i].vel += p[i].acc * dt;
+        p[i].ene += p[i].dene * dt;
+    }
+}
+
+void Solver::correct(const real dt)
+{
+    SPHParticle * p = m_sim->particles.get();
+    const int num = m_sim->particle_num;
+    assert(p);
+
+#pragma omp parallel for
+    for(int i = 0; i < num; ++i) {
+        p[i].vel = p[i].vel_i + p[i].acc * (0.5 * dt);
+        p[i].ene = p[i].ene_i + p[i].dene * (0.5 * dt);
+    }
 }
 
 }

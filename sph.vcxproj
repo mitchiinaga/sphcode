@@ -117,16 +117,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\core.cpp" />
     <ClCompile Include="src\logger.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\output.cpp" />
     <ClCompile Include="src\pre_interaction.cpp" />
-    <ClCompile Include="src\sph.cpp" />
+    <ClCompile Include="src\solver.cpp" />
     <ClCompile Include="src\timestep.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\core.hpp" />
     <ClInclude Include="include\cubic_spline.hpp" />
     <ClInclude Include="include\defines.hpp" />
     <ClInclude Include="include\distance.hpp" />
@@ -139,7 +137,8 @@
     <ClInclude Include="include\parameters.hpp" />
     <ClInclude Include="include\particle.hpp" />
     <ClInclude Include="include\pre_interaction.hpp" />
-    <ClInclude Include="include\sph.hpp" />
+    <ClInclude Include="include\simulation.hpp" />
+    <ClInclude Include="include\solver.hpp" />
     <ClInclude Include="include\timestep.hpp" />
     <ClInclude Include="include\vector_type.hpp" />
     <ClInclude Include="include\wendland_kernel.hpp" />
