@@ -41,9 +41,9 @@ Output::~Output()
 
 void Output::output_particle(std::shared_ptr<Simulation> sim)
 {
-    const auto * particles = sim->particles.get();
-    const int num = sim->particle_num;
-    const real time = sim->time;
+    const auto * particles = sim->get_particles().get();
+    const int num = sim->get_particle_num();
+    const real time = sim->get_time();
 
     const std::string dir_name = Logger::get_dir_name();
     const std::string file_name = dir_name + (boost::format("/%05d.dat") % m_count).str();

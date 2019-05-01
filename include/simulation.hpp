@@ -9,14 +9,26 @@ class SPHParticle;
 class KernelFunction;
 class Distance;
 
-struct Simulation {
-    std::shared_ptr<SPHParticle[]> particles;
-    int particle_num;
-    real time;
-    real dt;
-    real h_per_v_sig_max; // h / v_sig
-    std::shared_ptr<KernelFunction> kernel;
-    std::shared_ptr<Distance> distance;
+#define ADD_MEMBER(type, name)\
+private:\
+    type name;\
+public:\
+    void set_##name(type v) { name = v; }\
+    type & get_##name() { return name; }
+
+class Simulation {
+    ADD_MEMBER(std::shared_ptr<SPHParticle[]>, particles)
+    ADD_MEMBER(int, particle_num)
+    ADD_MEMBER(real, time)
+    ADD_MEMBER(real, dt)
+    ADD_MEMBER(real, h_per_v_sig_max)
+    ADD_MEMBER(std::shared_ptr<KernelFunction>, kernel)
+    ADD_MEMBER(std::shared_ptr<Distance>, distance)
+public:
+    void update_time()
+    {
+        time += dt;
+    }
 };
 
 }

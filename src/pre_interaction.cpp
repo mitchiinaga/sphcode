@@ -23,9 +23,9 @@ void PreInteraction::initialize(std::shared_ptr<SPHParameters> param)
 
 void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
 {
-    auto * particles = sim->particles.get();
-    auto * distance = sim->distance.get();
-    const int num = sim->particle_num;
+    auto * particles = sim->get_particles().get();
+    auto * distance = sim->get_distance().get();
+    const int num = sim->get_particle_num();
 
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {

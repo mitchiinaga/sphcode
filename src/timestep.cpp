@@ -17,9 +17,9 @@ void TimeStep::initialize(std::shared_ptr<SPHParameters> param)
 
 void TimeStep::calculation(std::shared_ptr<Simulation> sim)
 {
-    auto * particles = sim->particles.get();
-    auto * distance = sim->distance.get();
-    const int num = sim->particle_num;
+    auto * particles = sim->get_particles().get();
+    auto * distance = sim->get_distance().get();
+    const int num = sim->get_particle_num();
 
     omp_real dt_min;
 #pragma omp parallel for
@@ -30,9 +30,9 @@ void TimeStep::calculation(std::shared_ptr<Simulation> sim)
         }
     }
 
-    const real dt_sound_i = c_sound * sim->h_per_v_sig_max;
+    const real dt_sound_i = c_sound * sim->get_h_per_v_sig_max();
     
-    sim->dt = std::min(dt_sound_i, dt_min.min());
+    sim->set_dt(std::min(dt_sound_i, dt_min.min()));
 }
 
 }

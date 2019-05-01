@@ -122,7 +122,7 @@ void Solver::run()
 {
     initialize();
 
-    m_sim->time = m_param->time.start;
+    m_sim->set_time(m_param->time.start);
 
     const real t_end = m_param->time.end;
     real t_out = m_param->time.output;
@@ -135,31 +135,33 @@ void Solver::run()
     auto t_cout_i = start;
     int loop = 0;
 
-    while(m_sim->time < t_end) {
+    while(const real t = m_sim->get_time() < t_end) {
         integrate();
+        const real dt = m_sim->get_dt();
+        const int num = m_sim->get_particle_num();
         ++loop;
         
         // 1ïbÇ≤Ç∆Ç…âÊñ èoóÕÇ∑ÇÈ
         const auto t_cout_f = std::chrono::system_clock::now();
         const real t_cout_s = std::chrono::duration_cast<std::chrono::seconds>(t_cout_f - t_cout_i).count();
         if(t_cout_s >= 1.0) {
-            WRITE_LOG << "loop: " << loop << ", time: " << m_sim->time << ", dt: " << m_sim->dt << ", num: " << m_sim->particle_num;
+            WRITE_LOG << "loop: " << loop << ", time: " << t << ", dt: " << dt << ", num: " << num;
             t_cout_i = std::chrono::system_clock::now();
         } else {
-            WRITE_LOG_ONLY << "loop: " << loop << ", time: " << m_sim->time << ", dt: " << m_sim->dt << ", num: " << m_sim->particle_num;
+            WRITE_LOG_ONLY << "loop: " << loop << ", time: " << t << ", dt: " << dt << ", num: " << num;
         }
 
-        if(m_sim->time > t_out) {
+        if(t > t_out) {
             m_output->output_particle(m_sim);
             t_out += m_param->time.output;
         }
 
-        if(m_sim->time > t_ene) {
+        if(t > t_ene) {
             m_output->output_energy(m_sim);
             t_ene += m_param->time.energy;
         }
 
-        m_sim->time += m_sim->dt;
+        m_sim->update_time();
     }
     const auto end = std::chrono::system_clock::now();
     const real calctime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
@@ -181,7 +183,7 @@ void Solver::initialize()
 void Solver::integrate()
 {
     m_timestep.calculation(m_sim);
-    real const dt = m_sim->dt;
+    real const dt = m_sim->get_dt();
 
     predict(dt);
     // calc_tree();
@@ -192,8 +194,8 @@ void Solver::integrate()
 
 void Solver::predict(const real dt)
 {
-    SPHParticle * p = m_sim->particles.get();
-    const int num = m_sim->particle_num;
+    SPHParticle * p = m_sim->get_particles().get();
+    const int num = m_sim->get_particle_num();
     assert(p);
 
 #pragma omp parallel for
@@ -211,8 +213,8 @@ void Solver::predict(const real dt)
 
 void Solver::correct(const real dt)
 {
-    SPHParticle * p = m_sim->particles.get();
-    const int num = m_sim->particle_num;
+    SPHParticle * p = m_sim->get_particles().get();
+    const int num = m_sim->get_particle_num();
     assert(p);
 
 #pragma omp parallel for

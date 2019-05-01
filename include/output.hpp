@@ -8,7 +8,7 @@
 namespace sph
 {
 class SPHParticle;
-struct Simulation;
+class Simulation;
 
 class Output {
     int m_count;

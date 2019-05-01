@@ -21,7 +21,6 @@ public:
 
     real balsara; // balsara switch
     real alpha;   // AV coefficient
-    real v_sig;   // signal velocity
 
     int id;
     SPHParticle *next = nullptr;

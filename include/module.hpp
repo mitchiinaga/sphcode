@@ -5,7 +5,7 @@
 namespace sph
 {
 struct SPHParameters;
-struct Simulation;
+class Simulation;
 
 class Module {
 public:
