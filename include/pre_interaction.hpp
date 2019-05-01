@@ -1,19 +1,17 @@
 #pragma once
 
 #include "module.hpp"
-#include "distance.hpp"
 
 namespace sph
 {
-struct SPHParameters;
 class SPHParticle;
+class Distance;
 
 class PreInteraction : public Module {
     bool     m_use_balsara_switch;
     bool     m_use_time_dependent_av;
     real     m_gamma;
     int      m_neighbor_number;
-    Distance m_distance;
 
     int exhaustive_search(
         SPHParticle & p_i,
@@ -21,10 +19,12 @@ class PreInteraction : public Module {
         SPHParticle const * particles,
         const int num,
         std::shared_ptr<int[]> neighbor_list,
-        const int list_size); // for debug
+        const int list_size,
+        Distance const * distance
+    ); // for debug
 
 public:
     void initialize(std::shared_ptr<SPHParameters> param) override;
-    void calculation(SPHParticle * particles, int num);
+    void calculation(std::shared_ptr<Simulation> sim) override;
 };
 }

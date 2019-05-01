@@ -14,7 +14,7 @@ public:
     {
     }
 
-    vec_t calc_r_ij(const vec_t & r_i, const vec_t & r_j)
+    vec_t calc_r_ij(const vec_t & r_i, const vec_t & r_j) const
     {
         return r_i - r_j;
     }

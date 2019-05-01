@@ -77,7 +77,7 @@ Solver::Solver(int argc, char * argv[])
 
     WRITE_LOG;
 
-    m_output = std::make_unique<Output>();
+    m_output = std::make_shared<Output>();
 }
 
 void Solver::read_parameterfile(const char * filename)
@@ -174,13 +174,14 @@ void Solver::initialize()
     m_timestep.initialize(m_param);
     m_pre.initialize(m_param);
     // calc_tree();
-    m_pre.calculation(m_sim->particles.get(), m_sim->particle_num);
+    m_pre.calculation(m_sim);
     // calc_force();
 }
 
 void Solver::integrate(real * time)
 {
-    real const dt = m_timestep.calculation(m_sim->particles.get(), m_sim->particle_num);
+    m_timestep.calculation(m_sim);
+    real const dt = m_sim->dt;
     predict(dt);
     // calc_tree();
 //    m_pre.calculation(m_particles.get(), m_particle_num);

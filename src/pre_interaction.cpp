@@ -3,6 +3,8 @@
 #include "parameters.hpp"
 #include "pre_interaction.hpp"
 #include "particle.hpp"
+#include "simulation.hpp"
+#include "distance.hpp"
 #include "openmp.hpp"
 
 namespace sph
@@ -17,18 +19,21 @@ void PreInteraction::initialize(std::shared_ptr<SPHParameters> param)
     m_use_balsara_switch = param->av.use_balsara_switch;
     m_gamma = param->physics.gamma;
     m_neighbor_number = param->physics.neighbor_number;
-    m_distance.initialize(param);
 }
 
-void PreInteraction::calculation(SPHParticle * particles, int num)
+void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
 {
+    auto * particles = sim->particles.get();
+    auto * distance = sim->distance.get();
+    const int num = sim->particle_num;
+
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {
         auto & p_i = particles[i];
         std::shared_ptr<int[]> neighbor_list(new int(m_neighbor_number * neighbor_list_size));
         
         // neighbor search
-        int const n_neighbor = exhaustive_search(p_i, p_i.sml * kernel_ratio, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size);
+        int const n_neighbor = exhaustive_search(p_i, p_i.sml * kernel_ratio, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, distance);
 
         // smoothing length
         constexpr real A = DIM == 1 ? 2.0 :
@@ -42,7 +47,7 @@ void PreInteraction::calculation(SPHParticle * particles, int num)
         for(int n = 0; n < n_neighbor; ++n) {
             int const j = neighbor_list[n];
             auto & p_j = particles[j];
-            const vec_t r_ij = m_distance.calc_r_ij(pos_i, p_j.pos);
+            const vec_t r_ij = distance->calc_r_ij(pos_i, p_j.pos);
             const real r = abs(r_ij);
 
             if(r >= p_i.sml) {
@@ -60,13 +65,14 @@ int PreInteraction::exhaustive_search(
     SPHParticle const * particles,
     const int num,
     std::shared_ptr<int[]> neighbor_list,
-    const int list_size)
+    const int list_size,
+    Distance const * distance)
 {
     const real kernel_size2 = kernel_size * kernel_size;
     const vec_t & pos_i = p_i.pos;
     int count = 0;
     for(int j = 0; j < num; ++j) {
-        const vec_t r_ij = m_distance.calc_r_ij(pos_i, particles[j].pos);
+        const vec_t r_ij = distance->calc_r_ij(pos_i, particles[j].pos);
         const real r2 = abs2(r_ij);
         if(r2 < kernel_size2) {
             neighbor_list[count] = j;
@@ -75,8 +81,8 @@ int PreInteraction::exhaustive_search(
     }
 
     std::sort(neighbor_list.get(), neighbor_list.get() + count, [&](const int a, const int b) {
-        const vec_t r_ia = m_distance.calc_r_ij(pos_i, particles[a].pos);
-        const vec_t r_ib = m_distance.calc_r_ij(pos_i, particles[b].pos);
+        const vec_t r_ia = distance->calc_r_ij(pos_i, particles[a].pos);
+        const vec_t r_ib = distance->calc_r_ij(pos_i, particles[b].pos);
         return abs2(r_ia) < abs2(r_ib);
     });
 

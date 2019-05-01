@@ -1,7 +1,10 @@
 #include "parameters.hpp"
 #include "timestep.hpp"
 #include "particle.hpp"
+#include "simulation.hpp"
 #include "openmp.hpp"
+
+#include <algorithm>
 
 namespace sph
 {
@@ -12,20 +15,24 @@ void TimeStep::initialize(std::shared_ptr<SPHParameters> param)
     c_force = param->cfl.force;
 }
 
-real TimeStep::calculation(SPHParticle * particles, int num)
+void TimeStep::calculation(std::shared_ptr<Simulation> sim)
 {
+    auto * particles = sim->particles.get();
+    auto * distance = sim->distance.get();
+    const int num = sim->particle_num;
+
     omp_real dt_min;
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {
-        const real dt_sound_i = c_sound * particles[i].sml / particles[i].v_sig;
         const real dt_force_i = c_force * std::sqrt(particles[i].sml / abs(particles[i].acc));
-        const real dt_min_i = dt_sound_i < dt_force_i ? dt_sound_i : dt_force_i;
-        if(dt_min_i < dt_min.get()) {
-            dt_min.get() = dt_min_i;
+        if(dt_force_i < dt_min.get()) {
+            dt_min.get() = dt_force_i;
         }
     }
 
-    return dt_min.min();
+    const real dt_sound_i = c_sound * sim->h_per_v_sig_max;
+    
+    sim->dt = std::min(dt_sound_i, dt_min.min());
 }
 
 }
