@@ -200,19 +200,20 @@ void Solver::initialize()
 void Solver::integrate()
 {
     m_timestep.calculation(m_sim);
-    real const dt = m_sim->get_dt();
 
-    predict(dt);
+    predict();
     // calc_tree();
 //    m_pre.calculation(m_particles.get(), m_particle_num);
     // calc_force();
-    correct(dt);
+    correct();
 }
 
-void Solver::predict(const real dt)
+void Solver::predict()
 {
     SPHParticle * p = m_sim->get_particles().get();
     const int num = m_sim->get_particle_num();
+    const real dt = m_sim->get_dt();
+
     assert(p);
 
 #pragma omp parallel for
@@ -228,10 +229,12 @@ void Solver::predict(const real dt)
     }
 }
 
-void Solver::correct(const real dt)
+void Solver::correct()
 {
     SPHParticle * p = m_sim->get_particles().get();
     const int num = m_sim->get_particle_num();
+    const real dt = m_sim->get_dt();
+
     assert(p);
 
 #pragma omp parallel for

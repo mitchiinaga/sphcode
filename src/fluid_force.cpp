@@ -1,27 +1,21 @@
 #include <algorithm>
 
-#include "parameters.hpp"
-#include "pre_interaction.hpp"
+#include "defines.hpp"
+#include "fluid_force.hpp"
 #include "particle.hpp"
-#include "simulation.hpp"
 #include "distance.hpp"
-#include "openmp.hpp"
+#include "simulation.hpp"
 #include "kernel/kernel_function.hpp"
 
 namespace sph
 {
 
-constexpr real kernel_ratio = 1.2;
-
-void PreInteraction::initialize(std::shared_ptr<SPHParameters> param)
+void FluidForce::initialize(std::shared_ptr<SPHParameters> param)
 {
-    m_use_time_dependent_av = param->av.use_time_dependent_av;
-    m_use_balsara_switch = param->av.use_balsara_switch;
-    m_gamma = param->physics.gamma;
     m_neighbor_number = param->physics.neighbor_number;
 }
 
-void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
+void FluidForce::calculation(std::shared_ptr<Simulation> sim)
 {
     auto * particles = sim->get_particles().get();
     auto * distance = sim->get_distance().get();
@@ -34,16 +28,9 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
         std::shared_ptr<int[]> neighbor_list(new int(m_neighbor_number * neighbor_list_size));
         
         // neighbor search
-        int const n_neighbor = exhaustive_search(p_i, p_i.sml * kernel_ratio, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, distance);
+        int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, distance);
 
-        // smoothing length
-        constexpr real A = DIM == 1 ? 2.0 :
-                           DIM == 2 ? M_PI :
-                                      4.0 * M_PI / 3.0;
-        p_i.sml = std::pow(m_neighbor_number * p_i.mass / (p_i.dens * A), 1.0 / DIM);
-
-        // density etc.
-        real dens_i = 0.0;
+        // fluid force
         const vec_t & pos_i = p_i.pos;
         for(int n = 0; n < n_neighbor; ++n) {
             int const j = neighbor_list[n];
@@ -54,17 +41,33 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
             if(r >= p_i.sml) {
                 break;
             }
-
-            dens_i += p_j.mass * kernel->w(r, p_i.sml);
         }
 
-        p_i.dens = dens_i;
-        p_i.pres = (m_gamma - 1.0) * dens_i * p_i.ene;
-        p_i.sound = std::sqrt(m_gamma * p_i.pres / dens_i);
     }
 }
 
-int PreInteraction::exhaustive_search(
+real FluidForce::artificial_viscosity(const SPHParticle & p_i, const SPHParticle & p_j)
+{
+    // Monaghan (1997)
+    const auto v_ij = p_i.vel - p_j.vel;
+    const auto r_ij = p_i.pos - p_j.pos;
+    const real vr = inner_product(v_ij, r_ij);
+
+    if(vr < 0) {
+        const real alpha = 0.5 * (p_i.alpha + p_j.alpha);
+        const real balsara = 0.5 * (p_i.balsara + p_j.balsara);
+        const real w_ij = vr / abs(r_ij);
+        const real v_sig = p_i.sound + p_j.sound - 3.0 * w_ij;
+        const real rho_ij_inv = 2.0 / (p_i.dens + p_j.dens);
+        
+        const real pi_ij = -0.5 * balsara * alpha * v_sig * w_ij * rho_ij_inv;
+        return pi_ij;
+    } else {
+        return 0;
+    }
+}
+
+int FluidForce::exhaustive_search(
     SPHParticle & p_i,
     const real kernel_size,
     SPHParticle const * particles,
@@ -73,12 +76,14 @@ int PreInteraction::exhaustive_search(
     const int list_size,
     Distance const * distance)
 {
-    const real kernel_size2 = kernel_size * kernel_size;
+    const real kernel_size_i2 = kernel_size * kernel_size;
     const vec_t & pos_i = p_i.pos;
     int count = 0;
     for(int j = 0; j < num; ++j) {
-        const vec_t r_ij = distance->calc_r_ij(pos_i, particles[j].pos);
+        const auto & p_j = particles[j];
+        const vec_t r_ij = distance->calc_r_ij(pos_i, p_j.pos);
         const real r2 = abs2(r_ij);
+        const real kernel_size2 = std::max(kernel_size_i2, p_j.sml * p_j.sml);
         if(r2 < kernel_size2) {
             neighbor_list[count] = j;
             ++count;

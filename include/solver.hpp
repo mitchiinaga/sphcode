@@ -28,8 +28,8 @@ class Solver {
 
     void read_parameterfile(const char * filename);
     void initialize();
-    void predict(const real dt);
-    void correct(const real dt);
+    void predict();
+    void correct();
     void integrate();
 
 public:

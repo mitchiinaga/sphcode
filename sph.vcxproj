@@ -117,6 +117,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\fluid_force.cpp" />
     <ClCompile Include="src\logger.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\output.cpp" />
@@ -129,6 +130,7 @@
     <ClInclude Include="include\defines.hpp" />
     <ClInclude Include="include\distance.hpp" />
     <ClInclude Include="include\exception.hpp" />
+    <ClInclude Include="include\fluid_force.hpp" />
     <ClInclude Include="include\kernel\cubic_spline.hpp" />
     <ClInclude Include="include\kernel\kernel_function.hpp" />
     <ClInclude Include="include\kernel\wendland_kernel.hpp" />

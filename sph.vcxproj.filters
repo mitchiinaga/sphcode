@@ -39,6 +39,9 @@
     <ClCompile Include="src\simulation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\fluid_force.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\defines.hpp">
@@ -91,6 +94,9 @@
     </ClInclude>
     <ClInclude Include="include\kernel\wendland_kernel.hpp">
       <Filter>Header Files\kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fluid_force.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
