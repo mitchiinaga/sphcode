@@ -122,44 +122,44 @@ void Solver::run()
 {
     initialize();
 
-    real t = m_param->time.start;
-    real t_b = t;
+    m_sim->time = m_param->time.start;
+
     const real t_end = m_param->time.end;
     real t_out = m_param->time.output;
     real t_ene = m_param->time.energy;
 
-//    m_output->output_particle(p->get_particles(), p->get_particle_num(), t);
-//    m_output->output_energy(p->get_particles(), p->get_particle_num(), t);
+    m_output->output_particle(m_sim);
+    m_output->output_energy(m_sim);
 
     const auto start = std::chrono::system_clock::now();
     auto t_cout_i = start;
     int loop = 0;
 
-    while(t < t_end) {
-        integrate(&t);
+    while(m_sim->time < t_end) {
+        integrate();
         ++loop;
         
         // 1•b‚²‚Æ‚É‰æ–Êo—Í‚·‚é
         const auto t_cout_f = std::chrono::system_clock::now();
         const real t_cout_s = std::chrono::duration_cast<std::chrono::seconds>(t_cout_f - t_cout_i).count();
         if(t_cout_s >= 1.0) {
-//            WRITE_LOG << "loop: " << loop << ", time: " << t << ", dt: " << t - t_b << ", num: " << p->get_particle_num();
+            WRITE_LOG << "loop: " << loop << ", time: " << m_sim->time << ", dt: " << m_sim->dt << ", num: " << m_sim->particle_num;
             t_cout_i = std::chrono::system_clock::now();
         } else {
-//            WRITE_LOG_ONLY << "loop: " << loop << ", time: " << t << ", dt: " << t - t_b << ", num: " << p->get_particle_num();
+            WRITE_LOG_ONLY << "loop: " << loop << ", time: " << m_sim->time << ", dt: " << m_sim->dt << ", num: " << m_sim->particle_num;
         }
 
-        if(t > t_out) {
-//            m_output->output_particle(p->get_particles(), p->get_particle_num(), t);
+        if(m_sim->time > t_out) {
+            m_output->output_particle(m_sim);
             t_out += m_param->time.output;
         }
 
-        if(t > t_ene) {
-//            m_output->output_energy(p->get_particles(), p->get_particle_num(), t);
+        if(m_sim->time > t_ene) {
+            m_output->output_energy(m_sim);
             t_ene += m_param->time.energy;
         }
 
-        t_b = t;
+        m_sim->time += m_sim->dt;
     }
     const auto end = std::chrono::system_clock::now();
     const real calctime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
@@ -178,16 +178,16 @@ void Solver::initialize()
     // calc_force();
 }
 
-void Solver::integrate(real * time)
+void Solver::integrate()
 {
     m_timestep.calculation(m_sim);
     real const dt = m_sim->dt;
+
     predict(dt);
     // calc_tree();
 //    m_pre.calculation(m_particles.get(), m_particle_num);
     // calc_force();
     correct(dt);
-    *time += dt;
 }
 
 void Solver::predict(const real dt)

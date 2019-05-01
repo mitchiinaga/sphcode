@@ -6,6 +6,7 @@
 #include "logger.hpp"
 #include "defines.hpp"
 #include "particle.hpp"
+#include "simulation.hpp"
 
 namespace sph
 {
@@ -38,8 +39,12 @@ Output::~Output()
     m_out_energy.close();
 }
 
-void Output::output_particle(const SPHParticle * particles, const int num, const real time)
+void Output::output_particle(std::shared_ptr<Simulation> sim)
 {
+    const auto * particles = sim->particles.get();
+    const int num = sim->particle_num;
+    const real time = sim->time;
+
     const std::string dir_name = Logger::get_dir_name();
     const std::string file_name = dir_name + (boost::format("/%05d.dat") % m_count).str();
     std::ofstream out(file_name);
@@ -52,7 +57,7 @@ void Output::output_particle(const SPHParticle * particles, const int num, const
     ++m_count;
 }
 
-void Output::output_energy(const SPHParticle * particles, const int num, const real time)
+void Output::output_energy(std::shared_ptr<Simulation> sim)
 {
     // output energy
 }

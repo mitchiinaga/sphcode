@@ -1,11 +1,14 @@
 #pragma once
 
 #include <fstream>
+#include <memory>
+
 #include "defines.hpp"
 
 namespace sph
 {
 class SPHParticle;
+struct Simulation;
 
 class Output {
     int m_count;
@@ -13,8 +16,8 @@ class Output {
 public:
     Output(int count = 0);
     ~Output();
-    void output_particle(const SPHParticle * particles, const int num, const real time);
-    void output_energy(const SPHParticle * particles, const int num, const real time);
+    void output_particle(std::shared_ptr<Simulation> sim);
+    void output_energy(std::shared_ptr<Simulation> sim);
 };
 
 }

@@ -30,7 +30,7 @@ class Solver {
     void initialize();
     void predict(const real dt);
     void correct(const real dt);
-    void integrate(real * time);
+    void integrate();
 
 public:
     Solver(int argc, char * argv[]);
