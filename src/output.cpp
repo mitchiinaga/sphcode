@@ -7,6 +7,7 @@
 #include "defines.hpp"
 #include "particle.hpp"
 #include "simulation.hpp"
+#include "openmp.hpp"
 
 namespace sph
 {
@@ -34,6 +35,7 @@ Output::Output(int count)
     const std::string dir_name = Logger::get_dir_name();
     const std::string file_name = dir_name + "/energy.dat";
     m_out_energy.open(file_name);
+    m_out_energy << "# time kinetic thermal potential total\n";
 }
 
 Output::~Output()
@@ -61,7 +63,28 @@ void Output::output_particle(std::shared_ptr<Simulation> sim)
 
 void Output::output_energy(std::shared_ptr<Simulation> sim)
 {
-    // output energy
+    const auto * particles = sim->get_particles().get();
+    const int num = sim->get_particle_num();
+    const real time = sim->get_time();
+
+    omp_real kinetic(0.0);
+    omp_real thermal(0.0);
+    omp_real potential(0.0);
+
+#pragma omp parallel for
+    for(int i = 0; i < num; ++i) {
+        const auto & p_i = particles[i];
+        kinetic.get() += 0.5 * p_i.mass * abs2(p_i.vel);
+        thermal.get() += p_i.mass * p_i.ene;
+        // potential;
+    }
+
+    const real e_k = kinetic.sum();
+    const real e_t = thermal.sum();
+    const real e_p = potential.sum();
+    const real total = e_k + e_t + e_p;
+
+    m_out_energy << time << " " << e_k << " " << e_t << " " << e_p << " " << total << std::endl;
 }
 
 }
