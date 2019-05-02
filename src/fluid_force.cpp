@@ -35,6 +35,7 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
         const vec_t & v_i = p_i.vel;
         const real p_per_rho2_i = p_i.pres / sqr(p_i.dens);
         const real h_i = p_i.sml;
+        const real gradh_i = p_i.gradh;
 
         vec_t acc(0.0);
         real dene = 0.0;
@@ -52,11 +53,17 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
             const vec_t dw_i = kernel->dw(r_ij, r, h_i);
             const vec_t dw_j = kernel->dw(r_ij, r, p_j.sml);
             const vec_t dw_ij = (dw_i + dw_j) * 0.5;
+            const vec_t v_ij = v_i - p_j.vel;
 
             const real pi_ij = artificial_viscosity(p_i, p_j, r_ij);
 
+#if 1
+            acc -= (dw_i * (p_j.mass * p_per_rho2_i * gradh_i + 0.5 * pi_ij) + dw_j * (p_j.mass * p_j.pres / sqr(p_j.dens) * p_j.gradh + 0.5 * pi_ij));
+            dene += p_j.mass * p_per_rho2_i * gradh_i * inner_product(v_ij, dw_i) + 0.5 * p_j.mass * pi_ij * inner_product(v_ij, dw_ij);
+#else
             acc -= dw_ij * (p_j.mass * (p_per_rho2_i + p_j.pres / sqr(p_j.dens) + pi_ij));
-            dene += p_j.mass * (p_per_rho2_i + 0.5 * pi_ij) * inner_product(v_i - p_j.vel, dw_ij);
+            dene += p_j.mass * (p_per_rho2_i + 0.5 * pi_ij) * inner_product(v_ij, dw_ij);
+#endif
         }
 
         p_i.acc = acc;

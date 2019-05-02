@@ -49,6 +49,7 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
 
         // density etc.
         real dens_i = 0.0;
+        real dh_dens_i = 0.0;
         real v_sig_max = p_i.sound * 2.0;
         const vec_t & pos_i = p_i.pos;
         for(int n = 0; n < n_neighbor; ++n) {
@@ -62,6 +63,7 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
             }
 
             dens_i += p_j.mass * kernel->w(r, p_i.sml);
+            dh_dens_i += p_j.mass * kernel->dhw(r, p_i.sml);
 
             if(i != j) {
                 const real v_sig = p_i.sound + p_j.sound - inner_product(pos_i - p_j.pos, p_i.vel - p_j.vel) / r;
@@ -73,6 +75,7 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
 
         p_i.dens = dens_i;
         p_i.pres = (m_gamma - 1.0) * dens_i * p_i.ene;
+        p_i.gradh = 1.0 / (1.0 + p_i.sml / (DIM * dens_i) * dh_dens_i);
 
         const real h_per_v_sig_i = p_i.sml / v_sig_max;
         if(h_per_v_sig.get() > h_per_v_sig_i) {
@@ -82,7 +85,6 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
 
     sim->set_h_per_v_sig(h_per_v_sig.min());
 
-    // signal velocity
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {
         auto & p_i = particles[i];
