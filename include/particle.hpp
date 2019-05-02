@@ -23,6 +23,8 @@ public:
     real balsara; // balsara switch
     real alpha;   // AV coefficient
 
+    real gradh;   // grad-h term
+
     int id;
     int neighbor;
     SPHParticle *next = nullptr;
