@@ -26,7 +26,7 @@ void Solver::make_shock_tube()
     real dx = dx_l;
     real dens = 1.0;
     real pres = 1.0;
-    const real mass = real(N);
+    const real mass = 0.5 / N * 0.25;
     const real gamma = m_param->physics.gamma;
     bool left = true;
 
@@ -38,6 +38,7 @@ void Solver::make_shock_tube()
         p_i.pres = pres;
         p_i.mass = mass;
         p_i.ene = p_i.pres / ((gamma - 1.0) * p_i.dens);
+        p_i.id = i;
 
         x += dx;
         if(x > 0.5 && left) {

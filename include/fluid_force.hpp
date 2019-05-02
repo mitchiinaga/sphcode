@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "module.hpp"
 
 namespace sph
@@ -15,7 +17,7 @@ class FluidForce : public Module {
         const real kernel_size,
         SPHParticle const * particles,
         const int num,
-        std::shared_ptr<int[]> neighbor_list,
+        std::vector<int> & neighbor_list,
         const int list_size,
         Distance const * distance
     ); // for debug

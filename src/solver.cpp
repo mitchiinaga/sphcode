@@ -162,11 +162,15 @@ void Solver::run()
     auto t_cout_i = start;
     int loop = 0;
 
-    while(const real t = m_sim->get_time() < t_end) {
+    real t = m_sim->get_time();
+    while(t < t_end) {
         integrate();
         const real dt = m_sim->get_dt();
         const int num = m_sim->get_particle_num();
         ++loop;
+
+        m_sim->update_time();
+        t = m_sim->get_time();
         
         // 1•b‚²‚Æ‚É‰æ–Êo—Í‚·‚é
         const auto t_cout_f = std::chrono::system_clock::now();
@@ -187,8 +191,6 @@ void Solver::run()
             m_output->output_energy(m_sim);
             t_ene += m_param->time.energy;
         }
-
-        m_sim->update_time();
     }
     const auto end = std::chrono::system_clock::now();
     const real calctime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
@@ -208,15 +210,19 @@ void Solver::initialize()
 
     SPHParticle * p = m_sim->get_particles().get();
     const int num = m_sim->get_particle_num();
+    const real gamma = m_param->physics.gamma;
+
     assert(p);
     const real alpha = m_param->av.alpha;
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {
         p[i].alpha = alpha;
         p[i].balsara = 1.0;
+        p[i].sound = std::sqrt(gamma * p[i].pres / p[i].dens);
     }
 
     // calc_tree();
+    m_pre.initial_smoothing(m_sim);
     m_pre.calculation(m_sim);
     m_fforce.calculation(m_sim);
 }

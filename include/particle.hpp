@@ -24,6 +24,7 @@ public:
     real alpha;   // AV coefficient
 
     int id;
+    int neighbor;
     SPHParticle *next = nullptr;
 };
 

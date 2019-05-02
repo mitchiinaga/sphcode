@@ -25,7 +25,7 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {
         auto & p_i = particles[i];
-        std::shared_ptr<int[]> neighbor_list(new int(m_neighbor_number * neighbor_list_size));
+        std::vector<int> neighbor_list(m_neighbor_number * neighbor_list_size);
         
         // neighbor search
         int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, distance);
@@ -90,7 +90,7 @@ int FluidForce::exhaustive_search(
     const real kernel_size,
     SPHParticle const * particles,
     const int num,
-    std::shared_ptr<int[]> neighbor_list,
+    std::vector<int> & neighbor_list,
     const int list_size,
     Distance const * distance)
 {
@@ -108,7 +108,7 @@ int FluidForce::exhaustive_search(
         }
     }
 
-    std::sort(neighbor_list.get(), neighbor_list.get() + count, [&](const int a, const int b) {
+    std::sort(neighbor_list.begin(), neighbor_list.begin() + count, [&](const int a, const int b) {
         const vec_t r_ia = distance->calc_r_ij(pos_i, particles[a].pos);
         const vec_t r_ib = distance->calc_r_ij(pos_i, particles[b].pos);
         return abs2(r_ia) < abs2(r_ib);
