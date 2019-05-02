@@ -5,5 +5,8 @@
     "neighborNumber" : 7,
     "gamma" : 1.4,
     "kernel" : "cubic_spline",
-    "N" : 100
+    "N" : 100,
+    "periodic" : true,
+    "rangeMax" : [1.5],
+    "rangeMin" : [-0.5]
 }

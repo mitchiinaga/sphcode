@@ -10,7 +10,7 @@ namespace sph
 
 struct SPHParameters;
 class KernelFunction;
-class Distance;
+class Periodic;
 
 #define ADD_MEMBER(type, name)\
 public:\
@@ -26,7 +26,7 @@ class Simulation {
     ADD_MEMBER(real, dt);
     ADD_MEMBER(real, h_per_v_sig);
     ADD_MEMBER(std::shared_ptr<KernelFunction>, kernel);
-    ADD_MEMBER(std::shared_ptr<Distance>, distance);
+    ADD_MEMBER(std::shared_ptr<Periodic>, periodic);
 
 public:
     Simulation(std::shared_ptr<SPHParameters> param);

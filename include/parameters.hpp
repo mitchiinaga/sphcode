@@ -41,6 +41,12 @@ struct SPHParameters {
     } physics;
 
     KernelType kernel;
+
+    struct Periodic {
+        bool is_valid;
+        real range_max[DIM];
+        real range_min[DIM];
+    } periodic;
 };
 
 }

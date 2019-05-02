@@ -10,6 +10,7 @@
 #include "exception.hpp"
 #include "output.hpp"
 #include "simulation.hpp"
+#include "periodic.hpp"
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -144,6 +145,33 @@ void Solver::read_parameterfile(const char * filename)
     } else {
         THROW_ERROR("kernel is unknown.");
     }
+
+    // periodic
+    m_param->periodic.is_valid = input.get<bool>("periodic", false);
+    if(m_param->periodic.is_valid) {
+        {
+            auto & range_max = input.get_child("rangeMax");
+            if(range_max.size() != DIM) {
+                THROW_ERROR("rangeMax != DIM");
+            }
+            int i = 0;
+            for(auto & v : range_max) {
+                m_param->periodic.range_max[i] = std::stod(v.second.data());
+                ++i;
+            }
+        }
+
+        {
+            auto & range_min = input.get_child("rangeMin");
+            if(range_min.size() != DIM) {
+                THROW_ERROR("rangeMax != DIM");
+            }
+            int i = 0;
+            for(auto & v : range_min) {
+                m_param->periodic.range_min[i] = std::stod(v.second.data());
+            }
+        }
+    }
 }
 
 void Solver::run()
@@ -242,6 +270,7 @@ void Solver::predict()
 {
     auto & p = m_sim->get_particles();
     const int num = m_sim->get_particle_num();
+    auto * periodic = m_sim->get_periodic().get();
     const real dt = m_sim->get_dt();
 
     assert(p.size() == num);
@@ -256,6 +285,8 @@ void Solver::predict()
         p[i].pos += p[i].vel_p * dt;
         p[i].vel += p[i].acc * dt;
         p[i].ene += p[i].dene * dt;
+
+        periodic->apply(p[i].pos);
     }
 }
 

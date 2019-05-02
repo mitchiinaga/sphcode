@@ -1,7 +1,7 @@
 #include "parameters.hpp"
 #include "simulation.hpp"
 #include "exception.hpp"
-#include "distance.hpp"
+#include "periodic.hpp"
 #include "kernel/cubic_spline.hpp"
 #include "kernel/wendland_kernel.hpp"
 
@@ -18,8 +18,8 @@ Simulation::Simulation(std::shared_ptr<SPHParameters> param)
         THROW_ERROR("kernel is unknown.");
     }
 
-    m_distance = std::make_shared<Distance>();
-    m_distance->initialize(param);
+    m_periodic = std::make_shared<Periodic>();
+    m_periodic->initialize(param);
 
     m_time = param->time.start;
 }

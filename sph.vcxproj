@@ -131,7 +131,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\defines.hpp" />
-    <ClInclude Include="include\distance.hpp" />
+    <ClInclude Include="include\periodic.hpp" />
     <ClInclude Include="include\exception.hpp" />
     <ClInclude Include="include\fluid_force.hpp" />
     <ClInclude Include="include\kernel\cubic_spline.hpp" />

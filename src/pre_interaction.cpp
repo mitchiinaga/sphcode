@@ -4,7 +4,7 @@
 #include "pre_interaction.hpp"
 #include "particle.hpp"
 #include "simulation.hpp"
-#include "distance.hpp"
+#include "periodic.hpp"
 #include "openmp.hpp"
 #include "kernel/kernel_function.hpp"
 #include "exception.hpp"
@@ -24,7 +24,7 @@ void PreInteraction::initialize(std::shared_ptr<SPHParameters> param)
 void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
 {
     auto & particles = sim->get_particles();
-    auto * distance = sim->get_distance().get();
+    auto * periodic = sim->get_periodic().get();
     const int num = sim->get_particle_num();
     auto * kernel = sim->get_kernel().get();
 
@@ -42,7 +42,7 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
         p_i.sml = std::pow(m_neighbor_number * p_i.mass / (p_i.dens * A), 1.0 / DIM);
         
         // neighbor search
-        int const n_neighbor = exhaustive_search(p_i, p_i.sml * m_kernel_ratio, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, distance);
+        int const n_neighbor = exhaustive_search(p_i, p_i.sml * m_kernel_ratio, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, periodic);
         p_i.neighbor = n_neighbor;
 
         // smoothing length
@@ -54,7 +54,7 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
         for(int n = 0; n < n_neighbor; ++n) {
             int const j = neighbor_list[n];
             auto & p_j = particles[j];
-            const vec_t r_ij = distance->calc_r_ij(pos_i, p_j.pos);
+            const vec_t r_ij = periodic->calc_r_ij(pos_i, p_j.pos);
             const real r = abs(r_ij);
 
             if(r >= p_i.sml) {
@@ -97,13 +97,13 @@ int PreInteraction::exhaustive_search(
     const int num,
     std::vector<int> & neighbor_list,
     const int list_size,
-    Distance const * distance)
+    Periodic const * periodic)
 {
     const real kernel_size2 = kernel_size * kernel_size;
     const vec_t & pos_i = p_i.pos;
     int count = 0;
     for(int j = 0; j < num; ++j) {
-        const vec_t r_ij = distance->calc_r_ij(pos_i, particles[j].pos);
+        const vec_t r_ij = periodic->calc_r_ij(pos_i, particles[j].pos);
         const real r2 = abs2(r_ij);
         if(r2 < kernel_size2) {
             neighbor_list[count] = j;
@@ -112,8 +112,8 @@ int PreInteraction::exhaustive_search(
     }
 
     std::sort(neighbor_list.begin(), neighbor_list.begin() + count, [&](const int a, const int b) {
-        const vec_t r_ia = distance->calc_r_ij(pos_i, particles[a].pos);
-        const vec_t r_ib = distance->calc_r_ij(pos_i, particles[b].pos);
+        const vec_t r_ia = periodic->calc_r_ij(pos_i, particles[a].pos);
+        const vec_t r_ib = periodic->calc_r_ij(pos_i, particles[b].pos);
         return abs2(r_ia) < abs2(r_ib);
     });
 
@@ -123,7 +123,7 @@ int PreInteraction::exhaustive_search(
 void PreInteraction::initial_smoothing(std::shared_ptr<Simulation> sim)
 {
     auto & particles = sim->get_particles();
-    auto * distance = sim->get_distance().get();
+    auto * periodic = sim->get_periodic().get();
     const int num = sim->get_particle_num();
     auto * kernel = sim->get_kernel().get();
 
@@ -139,7 +139,7 @@ void PreInteraction::initial_smoothing(std::shared_ptr<Simulation> sim)
         p_i.sml = std::pow(m_neighbor_number * p_i.mass / (p_i.dens * A), 1.0 / DIM);
         
         // neighbor search
-        int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, distance);
+        int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, periodic);
         p_i.neighbor = n_neighbor;
 
         // density
@@ -148,7 +148,7 @@ void PreInteraction::initial_smoothing(std::shared_ptr<Simulation> sim)
         for(int n = 0; n < n_neighbor; ++n) {
             int const j = neighbor_list[n];
             auto & p_j = particles[j];
-            const vec_t r_ij = distance->calc_r_ij(pos_i, p_j.pos);
+            const vec_t r_ij = periodic->calc_r_ij(pos_i, p_j.pos);
             const real r = abs(r_ij);
 
             if(r >= p_i.sml) {

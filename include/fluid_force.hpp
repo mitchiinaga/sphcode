@@ -3,11 +3,12 @@
 #include <vector>
 
 #include "module.hpp"
+#include "vector_type.hpp"
 
 namespace sph
 {
 class SPHParticle;
-class Distance;
+class Periodic;
 
 class FluidForce : public Module {
     int      m_neighbor_number;
@@ -19,10 +20,10 @@ class FluidForce : public Module {
         const int num,
         std::vector<int> & neighbor_list,
         const int list_size,
-        Distance const * distance
+        Periodic const * periodic
     ); // for debug
 
-    real artificial_viscosity(const SPHParticle & p_i, const SPHParticle & p_j);
+    real artificial_viscosity(const SPHParticle & p_i, const SPHParticle & p_j, const vec_t & r_ij);
 
 public:
     void initialize(std::shared_ptr<SPHParameters> param) override;

@@ -18,7 +18,7 @@ void TimeStep::initialize(std::shared_ptr<SPHParameters> param)
 void TimeStep::calculation(std::shared_ptr<Simulation> sim)
 {
     auto & particles = sim->get_particles();
-    auto * distance = sim->get_distance().get();
+    auto * periodic = sim->get_periodic().get();
     const int num = sim->get_particle_num();
 
     omp_real dt_min(std::numeric_limits<real>::max());

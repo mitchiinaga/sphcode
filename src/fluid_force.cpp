@@ -3,7 +3,7 @@
 #include "defines.hpp"
 #include "fluid_force.hpp"
 #include "particle.hpp"
-#include "distance.hpp"
+#include "periodic.hpp"
 #include "simulation.hpp"
 #include "kernel/kernel_function.hpp"
 
@@ -18,7 +18,7 @@ void FluidForce::initialize(std::shared_ptr<SPHParameters> param)
 void FluidForce::calculation(std::shared_ptr<Simulation> sim)
 {
     auto & particles = sim->get_particles();
-    auto * distance = sim->get_distance().get();
+    auto * periodic = sim->get_periodic().get();
     const int num = sim->get_particle_num();
     auto * kernel = sim->get_kernel().get();
 
@@ -28,7 +28,7 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
         std::vector<int> neighbor_list(m_neighbor_number * neighbor_list_size);
         
         // neighbor search
-        int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, distance);
+        int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, periodic);
 
         // fluid force
         const vec_t & r_i = p_i.pos;
@@ -42,7 +42,7 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
         for(int n = 0; n < n_neighbor; ++n) {
             int const j = neighbor_list[n];
             auto & p_j = particles[j];
-            const vec_t r_ij = distance->calc_r_ij(r_i, p_j.pos);
+            const vec_t r_ij = periodic->calc_r_ij(r_i, p_j.pos);
             const real r = abs(r_ij);
 
             if(r >= std::max(h_i, p_j.sml) || r == 0.0) {
@@ -53,7 +53,7 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
             const vec_t dw_j = kernel->dw(r_ij, r, p_j.sml);
             const vec_t dw_ij = (dw_i + dw_j) * 0.5;
 
-            const real pi_ij = artificial_viscosity(p_i, p_j);
+            const real pi_ij = artificial_viscosity(p_i, p_j, r_ij);
 
             acc -= dw_ij * (p_j.mass * (p_per_rho2_i + p_j.pres / sqr(p_j.dens) + pi_ij));
             dene += p_j.mass * (p_per_rho2_i + 0.5 * pi_ij) * inner_product(v_i - p_j.vel, dw_ij);
@@ -64,11 +64,10 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
     }
 }
 
-real FluidForce::artificial_viscosity(const SPHParticle & p_i, const SPHParticle & p_j)
+real FluidForce::artificial_viscosity(const SPHParticle & p_i, const SPHParticle & p_j, const vec_t & r_ij)
 {
     // Monaghan (1997)
     const auto v_ij = p_i.vel - p_j.vel;
-    const auto r_ij = p_i.pos - p_j.pos;
     const real vr = inner_product(v_ij, r_ij);
 
     if(vr < 0) {
@@ -92,14 +91,14 @@ int FluidForce::exhaustive_search(
     const int num,
     std::vector<int> & neighbor_list,
     const int list_size,
-    Distance const * distance)
+    Periodic const * periodic)
 {
     const real kernel_size_i2 = kernel_size * kernel_size;
     const vec_t & pos_i = p_i.pos;
     int count = 0;
     for(int j = 0; j < num; ++j) {
         const auto & p_j = particles[j];
-        const vec_t r_ij = distance->calc_r_ij(pos_i, p_j.pos);
+        const vec_t r_ij = periodic->calc_r_ij(pos_i, p_j.pos);
         const real r2 = abs2(r_ij);
         const real kernel_size2 = std::max(kernel_size_i2, p_j.sml * p_j.sml);
         if(r2 < kernel_size2) {
@@ -109,8 +108,8 @@ int FluidForce::exhaustive_search(
     }
 
     std::sort(neighbor_list.begin(), neighbor_list.begin() + count, [&](const int a, const int b) {
-        const vec_t r_ia = distance->calc_r_ij(pos_i, particles[a].pos);
-        const vec_t r_ib = distance->calc_r_ij(pos_i, particles[b].pos);
+        const vec_t r_ia = periodic->calc_r_ij(pos_i, particles[a].pos);
+        const vec_t r_ib = periodic->calc_r_ij(pos_i, particles[b].pos);
         return abs2(r_ia) < abs2(r_ib);
     });
 

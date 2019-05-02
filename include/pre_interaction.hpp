@@ -7,7 +7,7 @@
 namespace sph
 {
 class SPHParticle;
-class Distance;
+class Periodic;
 
 class PreInteraction : public Module {
     bool     m_use_balsara_switch;
@@ -23,7 +23,7 @@ class PreInteraction : public Module {
         const int num,
         std::vector<int> & neighbor_list,
         const int list_size,
-        Distance const * distance
+        Periodic const * periodic
     ); // for debug
 
 public:
