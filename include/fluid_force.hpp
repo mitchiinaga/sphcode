@@ -15,7 +15,7 @@ class FluidForce : public Module {
     int exhaustive_search(
         SPHParticle & p_i,
         const real kernel_size,
-        SPHParticle const * particles,
+        const std::vector<SPHParticle> & particles,
         const int num,
         std::vector<int> & neighbor_list,
         const int list_size,

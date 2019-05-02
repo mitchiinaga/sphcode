@@ -1,12 +1,14 @@
 #pragma once
 
 #include <memory>
+#include <vector>
+
+#include "particle.hpp"
 
 namespace sph
 {
 
 struct SPHParameters;
-class SPHParticle;
 class KernelFunction;
 class Distance;
 
@@ -18,7 +20,7 @@ private:\
     type m_##name
 
 class Simulation {
-    ADD_MEMBER(std::shared_ptr<SPHParticle>, particles);
+    ADD_MEMBER(std::vector<SPHParticle>, particles);
     ADD_MEMBER(int, particle_num);
     ADD_MEMBER(real, time);
     ADD_MEMBER(real, dt);

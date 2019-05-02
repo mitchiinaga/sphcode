@@ -149,7 +149,7 @@ void Solver::read_parameterfile(const char * filename)
 void Solver::run()
 {
     initialize();
-    assert(m_sim->get_particles().get());
+    assert(m_sim->get_particles().size() == m_sim->get_particle_num());
 
     const real t_end = m_param->time.end;
     real t_out = m_param->time.output;
@@ -208,11 +208,11 @@ void Solver::initialize()
     m_pre.initialize(m_param);
     m_fforce.initialize(m_param);
 
-    SPHParticle * p = m_sim->get_particles().get();
+    auto & p = m_sim->get_particles();
     const int num = m_sim->get_particle_num();
     const real gamma = m_param->physics.gamma;
 
-    assert(p);
+    assert(p.size() == num);
     const real alpha = m_param->av.alpha;
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {
@@ -240,11 +240,11 @@ void Solver::integrate()
 
 void Solver::predict()
 {
-    SPHParticle * p = m_sim->get_particles().get();
+    auto & p = m_sim->get_particles();
     const int num = m_sim->get_particle_num();
     const real dt = m_sim->get_dt();
 
-    assert(p);
+    assert(p.size() == num);
 
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {
@@ -261,11 +261,11 @@ void Solver::predict()
 
 void Solver::correct()
 {
-    SPHParticle * p = m_sim->get_particles().get();
+    auto & p = m_sim->get_particles();
     const int num = m_sim->get_particle_num();
     const real dt = m_sim->get_dt();
 
-    assert(p);
+    assert(p.size() == num);
 
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {

@@ -45,7 +45,7 @@ Output::~Output()
 
 void Output::output_particle(std::shared_ptr<Simulation> sim)
 {
-    const auto * particles = sim->get_particles().get();
+    const auto & particles = sim->get_particles();
     const int num = sim->get_particle_num();
     const real time = sim->get_time();
 
@@ -63,7 +63,7 @@ void Output::output_particle(std::shared_ptr<Simulation> sim)
 
 void Output::output_energy(std::shared_ptr<Simulation> sim)
 {
-    const auto * particles = sim->get_particles().get();
+    const auto & particles = sim->get_particles();
     const int num = sim->get_particle_num();
     const real time = sim->get_time();
 

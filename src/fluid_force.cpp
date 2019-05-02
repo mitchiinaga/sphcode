@@ -17,7 +17,7 @@ void FluidForce::initialize(std::shared_ptr<SPHParameters> param)
 
 void FluidForce::calculation(std::shared_ptr<Simulation> sim)
 {
-    auto * particles = sim->get_particles().get();
+    auto & particles = sim->get_particles();
     auto * distance = sim->get_distance().get();
     const int num = sim->get_particle_num();
     auto * kernel = sim->get_kernel().get();
@@ -88,7 +88,7 @@ real FluidForce::artificial_viscosity(const SPHParticle & p_i, const SPHParticle
 int FluidForce::exhaustive_search(
     SPHParticle & p_i,
     const real kernel_size,
-    SPHParticle const * particles,
+    const std::vector<SPHParticle> & particles,
     const int num,
     std::vector<int> & neighbor_list,
     const int list_size,

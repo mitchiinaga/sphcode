@@ -18,10 +18,8 @@ void Solver::make_shock_tube()
     const real dx_l = dx_r * 0.25;
 
     const int num = N * 10;
-    m_sim->set_particles(std::shared_ptr<SPHParticle>(new SPHParticle[num], std::default_delete<SPHParticle[]>()));
-    m_sim->set_particle_num(num);
+    std::vector<SPHParticle> p(num);
 
-    auto * p = m_sim->get_particles().get();
     real x = -0.5 + dx_l * 0.5;
     real dx = dx_l;
     real dens = 1.0;
@@ -49,6 +47,9 @@ void Solver::make_shock_tube()
             left = false;
         }
     }
+
+    m_sim->set_particles(p);
+    m_sim->set_particle_num(p.size());
 }
 
 }
