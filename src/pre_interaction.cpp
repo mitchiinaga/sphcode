@@ -66,7 +66,7 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
             dh_dens_i += p_j.mass * kernel->dhw(r, p_i.sml);
 
             if(i != j) {
-                const real v_sig = p_i.sound + p_j.sound - inner_product(pos_i - p_j.pos, p_i.vel - p_j.vel) / r;
+                const real v_sig = p_i.sound + p_j.sound - 3.0 * inner_product(r_ij, p_i.vel - p_j.vel) / r;
                 if(v_sig > v_sig_max) {
                     v_sig_max = v_sig;
                 }
