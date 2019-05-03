@@ -51,7 +51,7 @@ void Solver::make_gresho_chan_vortex()
 
         p_i.pos[0] = x;
         p_i.pos[1] = y;
-        const real r = abs(p_i.pos);
+        const real r = std::abs(p_i.pos);
         const real vel = vortex_velocity(r);
         vec_t dir(-y, x);
         dir /= r;

@@ -229,9 +229,11 @@ inline real abs2(const vec_t &a)
     return inner_product(a, a);
 }
 
+namespace std {
 inline real abs(const vec_t &a)
 {
     return std::sqrt(inner_product(a, a));
+}
 }
 
 #if DIM == 2
@@ -268,5 +270,5 @@ inline vec_t vector_product(const real (&a)[DIM], const vec_t &b)
 
 inline real distance(const vec_t &a, const vec_t &b)
 {
-    return abs(a - b);
+    return std::abs(a - b);
 }

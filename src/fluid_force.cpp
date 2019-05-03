@@ -44,7 +44,7 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
             int const j = neighbor_list[n];
             auto & p_j = particles[j];
             const vec_t r_ij = periodic->calc_r_ij(r_i, p_j.pos);
-            const real r = abs(r_ij);
+            const real r = std::abs(r_ij);
 
             if(r >= std::max(h_i, p_j.sml) || r == 0.0) {
                 continue;
@@ -80,7 +80,7 @@ real FluidForce::artificial_viscosity(const SPHParticle & p_i, const SPHParticle
     if(vr < 0) {
         const real alpha = 0.5 * (p_i.alpha + p_j.alpha);
         const real balsara = 0.5 * (p_i.balsara + p_j.balsara);
-        const real w_ij = vr / abs(r_ij);
+        const real w_ij = vr / std::abs(r_ij);
         const real v_sig = p_i.sound + p_j.sound - 3.0 * w_ij;
         const real rho_ij_inv = 2.0 / (p_i.dens + p_j.dens);
         

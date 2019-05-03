@@ -56,7 +56,7 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
             int const j = neighbor_list[n];
             auto & p_j = particles[j];
             const vec_t r_ij = periodic->calc_r_ij(pos_i, p_j.pos);
-            const real r = abs(r_ij);
+            const real r = std::abs(r_ij);
 
             if(r >= p_i.sml) {
                 break;
@@ -80,6 +80,35 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
         const real h_per_v_sig_i = p_i.sml / v_sig_max;
         if(h_per_v_sig.get() > h_per_v_sig_i) {
             h_per_v_sig.get() = h_per_v_sig_i;
+        }
+
+        // balsara switch
+        if(m_use_balsara_switch && DIM != 1) {
+            real div_v = 0.0;
+#if DIM == 2
+            real rot_v = 0.0;
+#else
+            vec_t rot_v = 0.0;
+#endif
+            for(int n = 0; n < n_neighbor; ++n) {
+                int const j = neighbor_list[n];
+                auto & p_j = particles[j];
+                const vec_t r_ij = periodic->calc_r_ij(pos_i, p_j.pos);
+                const real r = std::abs(r_ij);
+
+                if(r >= p_i.sml) {
+                    break;
+                }
+
+                const vec_t dw = kernel->dw(r_ij, r, p_i.sml);
+                const vec_t v_ij = p_i.vel - p_j.vel;
+                div_v -= p_j.mass * inner_product(v_ij, dw);
+                rot_v += vector_product(v_ij, dw) * p_j.mass;
+            }
+            div_v /= p_i.dens;
+            rot_v /= p_i.dens;
+            const real sound = std::sqrt(m_gamma * p_i.pres / p_i.dens);
+            p_i.balsara = std::abs(div_v) / (std::abs(div_v) + std::abs(rot_v) + 1e-4 * sound / p_i.sml);
         }
     }
 
@@ -151,7 +180,7 @@ void PreInteraction::initial_smoothing(std::shared_ptr<Simulation> sim)
             int const j = neighbor_list[n];
             auto & p_j = particles[j];
             const vec_t r_ij = periodic->calc_r_ij(pos_i, p_j.pos);
-            const real r = abs(r_ij);
+            const real r = std::abs(r_ij);
 
             if(r >= p_i.sml) {
                 break;
