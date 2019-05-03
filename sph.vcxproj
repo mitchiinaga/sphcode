@@ -119,6 +119,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="sample\gresho_chan_vortex\gresho_chan_vortex.cpp" />
     <ClCompile Include="sample\shock_tube\shock_tube.cpp" />
     <ClCompile Include="src\fluid_force.cpp" />
     <ClCompile Include="src\logger.cpp" />

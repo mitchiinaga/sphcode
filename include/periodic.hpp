@@ -39,7 +39,7 @@ public:
             vec_t r_ij;
 
             #define R_IJ(a, b, c)\
-                if(std::abs(r_ij##a[i]) < std::abs(r_ij##b[i]) && std::abs(r_ij##a[i]) < std::abs(r_ij##c[i])) {\
+                if(std::abs(r_ij##a[i]) <= std::abs(r_ij##b[i]) && std::abs(r_ij##a[i]) <= std::abs(r_ij##c[i])) {\
                     r_ij[i] = r_ij##a[i];\
                     continue;\
                 }

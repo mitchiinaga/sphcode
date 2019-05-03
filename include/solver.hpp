@@ -21,6 +21,7 @@ class Output;
 
 enum struct Sample {
     ShockTube,
+    GreshoChanVortex,
     DoNotUse,
 };
 
@@ -47,6 +48,7 @@ class Solver {
     std::unordered_map<std::string, boost::any> m_sample_parameters;
 
     void make_shock_tube();
+    void make_gresho_chan_vortex();
 
 public:
     Solver(int argc, char * argv[]);

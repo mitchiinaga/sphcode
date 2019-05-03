@@ -103,6 +103,10 @@ void Solver::read_parameterfile(const char * filename)
         pt::read_json("sample/shock_tube/shock_tube.json", input);
         m_sample = Sample::ShockTube;
         m_sample_parameters["N"] = input.get<int>("N", 100);
+    } else if(name_str == "gresho_chan_vortex") {
+        pt::read_json("sample/gresho_chan_vortex/gresho_chan_vortex.json", input);
+        m_sample = Sample::GreshoChanVortex;
+        m_sample_parameters["N"] = input.get<int>("N", 64);
     } else {
         pt::read_json(filename, input);
         m_sample = Sample::DoNotUse;
@@ -169,6 +173,7 @@ void Solver::read_parameterfile(const char * filename)
             int i = 0;
             for(auto & v : range_min) {
                 m_param->periodic.range_min[i] = std::stod(v.second.data());
+                ++i;
             }
         }
     }
@@ -309,6 +314,8 @@ void Solver::make_initial_condition()
 {
     if(m_sample == Sample::ShockTube) {
         make_shock_tube();
+    } else if(m_sample == Sample::GreshoChanVortex) {
+        make_gresho_chan_vortex();
     } else if(m_sample == Sample::DoNotUse) {
         // make distribution
     } else {
