@@ -152,7 +152,7 @@ void Solver::read_parameterfile(const char * filename)
         if(m_param->av.alpha_max < m_param->av.alpha_min) {
             THROW_ERROR("alphaMax < alphaMin");
         }
-        m_param->av.epsilon = input.get<real>("epsilonAV", 0.1);
+        m_param->av.epsilon = input.get<real>("epsilonAV", 0.2);
     }
 
     // Tree

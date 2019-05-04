@@ -2,11 +2,12 @@
     "outputDirectory" : "sample/shock_tube/results",
     "endTime" : 0.2,
     "avAlpha" : 1.0,
-    "neighborNumber" : 5,
+    "neighborNumber" : 4,
     "gamma" : 1.4,
     "kernel" : "cubic_spline",
-    "N" : 100,
+    "N" : 50,
     "periodic" : true,
     "rangeMax" : [1.5],
-    "rangeMin" : [-0.5]
+    "rangeMin" : [-0.5],
+    "useTimeDependentAV" : false
 }
