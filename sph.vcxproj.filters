@@ -51,6 +51,9 @@
     <ClCompile Include="sample\gresho_chan_vortex\gresho_chan_vortex.cpp">
       <Filter>Source Files\sample</Filter>
     </ClCompile>
+    <ClCompile Include="sample\hydrostatic\hydrostatic.cpp">
+      <Filter>Source Files\sample</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\defines.hpp">

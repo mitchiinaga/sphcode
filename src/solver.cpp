@@ -85,6 +85,14 @@ Solver::Solver(int argc, char * argv[])
         THROW_ERROR("kernel is unknown.");
     }
 
+    switch(m_sample) {
+#define WRITE_SAMPLE(a, b) case a: WRITE_LOG << "Sample: " b " test"; break
+        WRITE_SAMPLE(Sample::ShockTube, "shock tube");
+        WRITE_SAMPLE(Sample::GreshoChanVortex, "Gresho-Chan vortex");
+        WRITE_SAMPLE(Sample::HydroStatic, "Hydro static");
+#undef WRITE_SAMPLE
+    }
+
     WRITE_LOG;
 
     m_output = std::make_shared<Output>();
@@ -107,6 +115,10 @@ void Solver::read_parameterfile(const char * filename)
         pt::read_json("sample/gresho_chan_vortex/gresho_chan_vortex.json", input);
         m_sample = Sample::GreshoChanVortex;
         m_sample_parameters["N"] = input.get<int>("N", 64);
+    } else if(name_str == "hydrostatic") {
+        pt::read_json("sample/hydrostatic/hydrostatic.json", input);
+        m_sample = Sample::HydroStatic;
+        m_sample_parameters["N"] = input.get<int>("N", 32);
     } else {
         pt::read_json(filename, input);
         m_sample = Sample::DoNotUse;
@@ -312,14 +324,17 @@ void Solver::correct()
 
 void Solver::make_initial_condition()
 {
-    if(m_sample == Sample::ShockTube) {
-        make_shock_tube();
-    } else if(m_sample == Sample::GreshoChanVortex) {
-        make_gresho_chan_vortex();
-    } else if(m_sample == Sample::DoNotUse) {
-        // make distribution
-    } else {
-        THROW_ERROR("unknown sample type.");
+    switch(m_sample) {
+#define MAKE_SAMPLE(a, b) case a: make_##b(); break
+        MAKE_SAMPLE(Sample::ShockTube, shock_tube);
+        MAKE_SAMPLE(Sample::GreshoChanVortex, gresho_chan_vortex);
+        MAKE_SAMPLE(Sample::HydroStatic, hydrostatic);
+        case Sample::DoNotUse:
+            // make distribution
+            break;
+        default:
+            THROW_ERROR("unknown sample type.");
+#undef MAKE_SAMPLE
     }
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <cassert>
 
 #include "vector_type.hpp"
 #include "parameters.hpp"
@@ -48,6 +49,7 @@ public:
                 R_IJ(1, 2, 3);
                 R_IJ(2, 3, 1);
                 R_IJ(3, 1, 2);
+                assert(false);
             }
 
             return r_ij;

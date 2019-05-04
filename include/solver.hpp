@@ -22,6 +22,7 @@ class Output;
 enum struct Sample {
     ShockTube,
     GreshoChanVortex,
+    HydroStatic,
     DoNotUse,
 };
 
@@ -49,6 +50,7 @@ class Solver {
 
     void make_shock_tube();
     void make_gresho_chan_vortex();
+    void make_hydrostatic();
 
 public:
     Solver(int argc, char * argv[]);

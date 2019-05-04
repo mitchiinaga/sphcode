@@ -1,0 +1,13 @@
+{
+    "outputDirectory" : "sample/hydrostatic/results",
+    "endTime" : 8.0,
+    "avAlpha" : 1.0,
+    "neighborNumber" : 16,
+    "useBalsaraSwitch" : true,
+    "gamma" : 1.66666666666666666666666666666666667,
+    "kernel" : "cubic_spline",
+    "N" : 32,
+    "periodic" : true,
+    "rangeMax" : [0.5, 0.5],
+    "rangeMin" : [-0.5,-0.5]
+}
