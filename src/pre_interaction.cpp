@@ -15,6 +15,11 @@ namespace sph
 void PreInteraction::initialize(std::shared_ptr<SPHParameters> param)
 {
     m_use_time_dependent_av = param->av.use_time_dependent_av;
+    if(m_use_time_dependent_av) {
+        m_alpha_max = param->av.alpha_max;
+        m_alpha_min = param->av.alpha_min;
+        m_epsilon = param->av.epsilon;
+    }
     m_use_balsara_switch = param->av.use_balsara_switch;
     m_gamma = param->physics.gamma;
     m_neighbor_number = param->physics.neighbor_number;
@@ -27,6 +32,7 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
     auto * periodic = sim->get_periodic().get();
     const int num = sim->get_particle_num();
     auto * kernel = sim->get_kernel().get();
+    const real dt = sim->get_dt();
 
     omp_real h_per_v_sig(std::numeric_limits<real>::max());
 
@@ -82,8 +88,10 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
             h_per_v_sig.get() = h_per_v_sig_i;
         }
 
-        // balsara switch
+        // Artificial viscosity
         if(m_use_balsara_switch && DIM != 1) {
+#if DIM != 1
+            // balsara switch
             real div_v = 0.0;
 #if DIM == 2
             real rot_v = 0.0;
@@ -109,6 +117,35 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
             rot_v /= p_i.dens;
             const real sound = std::sqrt(m_gamma * p_i.pres / p_i.dens);
             p_i.balsara = std::abs(div_v) / (std::abs(div_v) + std::abs(rot_v) + 1e-4 * sound / p_i.sml);
+
+            // time dependent alpha
+            if(m_use_time_dependent_av) {
+                const real tau_inv = m_epsilon * sound / p_i.sml;
+                const real dalpha = (-(p_i.alpha - m_alpha_min) * tau_inv + std::max(-div_v, 0.0) * (m_alpha_max - p_i.alpha)) * dt;
+                p_i.alpha += dalpha;
+            }
+#endif
+        } else if(m_use_time_dependent_av) {
+            real div_v = 0.0;
+            for(int n = 0; n < n_neighbor; ++n) {
+                int const j = neighbor_list[n];
+                auto & p_j = particles[j];
+                const vec_t r_ij = periodic->calc_r_ij(pos_i, p_j.pos);
+                const real r = std::abs(r_ij);
+
+                if(r >= p_i.sml) {
+                    break;
+                }
+
+                const vec_t dw = kernel->dw(r_ij, r, p_i.sml);
+                const vec_t v_ij = p_i.vel - p_j.vel;
+                div_v -= p_j.mass * inner_product(v_ij, dw);
+            }
+            div_v /= p_i.dens;
+            const real sound = std::sqrt(m_gamma * p_i.pres / p_i.dens);
+            const real tau_inv = m_epsilon * sound / p_i.sml;
+            const real dalpha = (-(p_i.alpha - m_alpha_min) * tau_inv + std::max(-div_v, 0.0) * (m_alpha_max - p_i.alpha)) * dt;
+            p_i.alpha += dalpha;
         }
     }
 

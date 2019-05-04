@@ -28,6 +28,9 @@ struct SPHParameters {
         real alpha;
         bool use_balsara_switch;
         bool use_time_dependent_av;
+        real alpha_max;
+        real alpha_min;
+        real epsilon; // tau = h / (epsilon * c)
     } av;
 
     struct Tree {

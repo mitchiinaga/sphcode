@@ -66,6 +66,9 @@ Solver::Solver(int argc, char * argv[])
     }
     if(m_param->av.use_time_dependent_av) {
         WRITE_LOG << "* use time dependent AV";
+        WRITE_LOG << "* alpha max = " << m_param->av.alpha_max;
+        WRITE_LOG << "* alpha min = " << m_param->av.alpha_min;
+        WRITE_LOG << "* epsilon = " << m_param->av.epsilon;
     }
 
     WRITE_LOG << "Tree";
@@ -143,6 +146,14 @@ void Solver::read_parameterfile(const char * filename)
     m_param->av.alpha = input.get<real>("avAlpha", 1.0);
     m_param->av.use_balsara_switch = input.get<bool>("useBalsaraSwitch", true);
     m_param->av.use_time_dependent_av = input.get<bool>("useTimeDependentAV", false);
+    if(m_param->av.use_time_dependent_av) {
+        m_param->av.alpha_max = input.get<real>("alphaMax", 2.0);
+        m_param->av.alpha_min = input.get<real>("alphaMin", 0.1);
+        if(m_param->av.alpha_max < m_param->av.alpha_min) {
+            THROW_ERROR("alphaMax < alphaMin");
+        }
+        m_param->av.epsilon = input.get<real>("epsilonAV", 0.1);
+    }
 
     // Tree
     m_param->tree.max_level = input.get<int>("maxTreeLevel", 20);

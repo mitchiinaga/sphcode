@@ -28,6 +28,7 @@ inline void output(const SPHParticle & p, std::ofstream &out)
     OUTPUT_SCALAR(sml);
     OUTPUT_SCALAR(id);
     OUTPUT_SCALAR(neighbor);
+    OUTPUT_SCALAR(alpha);
     out << std::endl;
 }
 
