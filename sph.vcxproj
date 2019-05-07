@@ -130,6 +130,7 @@
     <ClCompile Include="src\simulation.cpp" />
     <ClCompile Include="src\solver.cpp" />
     <ClCompile Include="src\timestep.cpp" />
+    <ClCompile Include="src\bhtree.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\defines.hpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="include\simulation.hpp" />
     <ClInclude Include="include\solver.hpp" />
     <ClInclude Include="include\timestep.hpp" />
+    <ClInclude Include="include\bhtree.hpp" />
     <ClInclude Include="include\vector_type.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

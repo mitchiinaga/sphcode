@@ -11,6 +11,7 @@ namespace sph
 struct SPHParameters;
 class KernelFunction;
 class Periodic;
+class BHTree;
 
 #define ADD_MEMBER(type, name)\
 public:\
@@ -27,10 +28,12 @@ class Simulation {
     ADD_MEMBER(real, h_per_v_sig);
     ADD_MEMBER(std::shared_ptr<KernelFunction>, kernel);
     ADD_MEMBER(std::shared_ptr<Periodic>, periodic);
+    ADD_MEMBER(std::shared_ptr<BHTree>, tree);
 
 public:
     Simulation(std::shared_ptr<SPHParameters> param);
     void update_time();
+    void make_tree();
 };
 
 #undef ADD_MEMBER

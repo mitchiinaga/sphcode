@@ -54,6 +54,9 @@
     <ClCompile Include="sample\hydrostatic\hydrostatic.cpp">
       <Filter>Source Files\sample</Filter>
     </ClCompile>
+    <ClCompile Include="src\bhtree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\defines.hpp">
@@ -108,6 +111,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\periodic.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\bhtree.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

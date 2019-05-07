@@ -11,6 +11,7 @@
 #include "output.hpp"
 #include "simulation.hpp"
 #include "periodic.hpp"
+#include "bhtree.hpp"
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -277,7 +278,10 @@ void Solver::initialize()
         p[i].sound = std::sqrt(gamma * p[i].pres / p[i].dens);
     }
 
-    // calc_tree();
+    auto tree = m_sim->get_tree();
+    tree->assign(num);
+    tree->make(p, num);
+
     m_pre.initial_smoothing(m_sim);
     m_pre.calculation(m_sim);
     m_fforce.calculation(m_sim);
@@ -288,7 +292,7 @@ void Solver::integrate()
     m_timestep.calculation(m_sim);
 
     predict();
-    // calc_tree();
+    m_sim->make_tree();
     m_pre.calculation(m_sim);
     m_fforce.calculation(m_sim);
     correct();

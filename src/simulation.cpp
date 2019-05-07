@@ -2,6 +2,7 @@
 #include "simulation.hpp"
 #include "exception.hpp"
 #include "periodic.hpp"
+#include "bhtree.hpp"
 #include "kernel/cubic_spline.hpp"
 #include "kernel/wendland_kernel.hpp"
 
@@ -21,12 +22,20 @@ Simulation::Simulation(std::shared_ptr<SPHParameters> param)
     m_periodic = std::make_shared<Periodic>();
     m_periodic->initialize(param);
 
+    m_tree = std::make_shared<BHTree>();
+    m_tree->initialize(param);
+
     m_time = param->time.start;
 }
 
 void Simulation::update_time()
 {
     m_time += m_dt;
+}
+
+void Simulation::make_tree()
+{
+    m_tree->make(m_particles, m_particle_num);
 }
 
 }
