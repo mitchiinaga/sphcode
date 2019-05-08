@@ -279,7 +279,7 @@ void Solver::initialize()
     }
 
     auto tree = m_sim->get_tree();
-    tree->assign(num);
+    tree->resize(num);
     tree->make(p, num);
 
     m_pre.initial_smoothing(m_sim);
