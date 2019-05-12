@@ -229,7 +229,7 @@ void Solver::run()
         m_sim->update_time();
         t = m_sim->get_time();
         
-        // 1•b‚²‚Æ‚É‰æ–Êo—Í‚·‚é
+        // 1ï¿½bï¿½ï¿½ï¿½Æ‚É‰ï¿½Êoï¿½Í‚ï¿½ï¿½ï¿½
         const auto t_cout_f = std::chrono::system_clock::now();
         const real t_cout_s = std::chrono::duration_cast<std::chrono::seconds>(t_cout_f - t_cout_i).count();
         if(t_cout_s >= 1.0) {
@@ -268,6 +268,7 @@ void Solver::initialize()
     auto & p = m_sim->get_particles();
     const int num = m_sim->get_particle_num();
     const real gamma = m_param->physics.gamma;
+    const real c_sound = gamma * (gamma - 1.0);
 
     assert(p.size() == num);
     const real alpha = m_param->av.alpha;
@@ -275,7 +276,7 @@ void Solver::initialize()
     for(int i = 0; i < num; ++i) {
         p[i].alpha = alpha;
         p[i].balsara = 1.0;
-        p[i].sound = std::sqrt(gamma * p[i].pres / p[i].dens);
+        p[i].sound = std::sqrt(c_sound * p[i].ene);
     }
 
     auto tree = m_sim->get_tree();
@@ -304,6 +305,8 @@ void Solver::predict()
     const int num = m_sim->get_particle_num();
     auto * periodic = m_sim->get_periodic().get();
     const real dt = m_sim->get_dt();
+    const real gamma = m_param->physics.gamma;
+    const real c_sound = gamma * (gamma - 1.0);
 
     assert(p.size() == num);
 
@@ -317,6 +320,7 @@ void Solver::predict()
         p[i].pos += p[i].vel_p * dt;
         p[i].vel += p[i].acc * dt;
         p[i].ene += p[i].dene * dt;
+        p[i].sound = std::sqrt(c_sound * p[i].ene);
 
         periodic->apply(p[i].pos);
     }
@@ -327,6 +331,8 @@ void Solver::correct()
     auto & p = m_sim->get_particles();
     const int num = m_sim->get_particle_num();
     const real dt = m_sim->get_dt();
+    const real gamma = m_param->physics.gamma;
+    const real c_sound = gamma * (gamma - 1.0);
 
     assert(p.size() == num);
 
@@ -334,6 +340,7 @@ void Solver::correct()
     for(int i = 0; i < num; ++i) {
         p[i].vel = p[i].vel_p + p[i].acc * (0.5 * dt);
         p[i].ene = p[i].ene_p + p[i].dene * (0.5 * dt);
+        p[i].sound = std::sqrt(c_sound * p[i].ene);
     }
 }
 

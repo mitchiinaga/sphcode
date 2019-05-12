@@ -115,12 +115,11 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
             }
             div_v /= p_i.dens;
             rot_v /= p_i.dens;
-            const real sound = std::sqrt(m_gamma * p_i.pres / p_i.dens);
-            p_i.balsara = std::abs(div_v) / (std::abs(div_v) + std::abs(rot_v) + 1e-4 * sound / p_i.sml);
+            p_i.balsara = std::abs(div_v) / (std::abs(div_v) + std::abs(rot_v) + 1e-4 * p_i.sound / p_i.sml);
 
             // time dependent alpha
             if(m_use_time_dependent_av) {
-                const real tau_inv = m_epsilon * sound / p_i.sml;
+                const real tau_inv = m_epsilon * p_i.sound / p_i.sml;
                 const real dalpha = (-(p_i.alpha - m_alpha_min) * tau_inv + std::max(-div_v, 0.0) * (m_alpha_max - p_i.alpha)) * dt;
                 p_i.alpha += dalpha;
             }
@@ -142,20 +141,13 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
                 div_v -= p_j.mass * inner_product(v_ij, dw);
             }
             div_v /= p_i.dens;
-            const real sound = std::sqrt(m_gamma * p_i.pres / p_i.dens);
-            const real tau_inv = m_epsilon * sound / p_i.sml;
+            const real tau_inv = m_epsilon * p_i.sound / p_i.sml;
             const real dalpha = (-(p_i.alpha - m_alpha_min) * tau_inv + std::max(-div_v, 0.0) * (m_alpha_max - p_i.alpha)) * dt;
             p_i.alpha += dalpha;
         }
     }
 
     sim->set_h_per_v_sig(h_per_v_sig.min());
-
-#pragma omp parallel for
-    for(int i = 0; i < num; ++i) {
-        auto & p_i = particles[i];
-        p_i.sound = std::sqrt(m_gamma * p_i.pres / p_i.dens);
-    }
 }
 
 int PreInteraction::exhaustive_search(
