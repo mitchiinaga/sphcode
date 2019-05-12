@@ -8,6 +8,7 @@
 #include "openmp.hpp"
 #include "kernel/kernel_function.hpp"
 #include "exception.hpp"
+#include "bhtree.hpp"
 
 namespace sph
 {
@@ -33,6 +34,7 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
     const int num = sim->get_particle_num();
     auto * kernel = sim->get_kernel().get();
     const real dt = sim->get_dt();
+    auto * tree = sim->get_tree().get();
 
     omp_real h_per_v_sig(std::numeric_limits<real>::max());
 
@@ -48,7 +50,11 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
         p_i.sml = std::pow(m_neighbor_number * p_i.mass / (p_i.dens * A), 1.0 / DIM);
         
         // neighbor search
+#ifdef EXHAUSTIVE_SEARCH
         int const n_neighbor = exhaustive_search(p_i, p_i.sml * m_kernel_ratio, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, periodic);
+#else
+        int const n_neighbor = tree->neighbor_search(p_i, neighbor_list, false);
+#endif
         p_i.neighbor = n_neighbor;
 
         // smoothing length
@@ -148,6 +154,7 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
     }
 
     sim->set_h_per_v_sig(h_per_v_sig.min());
+    tree->set_kernel();
 }
 
 int PreInteraction::exhaustive_search(
@@ -186,6 +193,7 @@ void PreInteraction::initial_smoothing(std::shared_ptr<Simulation> sim)
     auto * periodic = sim->get_periodic().get();
     const int num = sim->get_particle_num();
     auto * kernel = sim->get_kernel().get();
+    auto * tree = sim->get_tree().get();
 
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {
@@ -199,7 +207,11 @@ void PreInteraction::initial_smoothing(std::shared_ptr<Simulation> sim)
         p_i.sml = std::pow(m_neighbor_number * p_i.mass / (p_i.dens * A), 1.0 / DIM);
         
         // neighbor search
+#ifdef EXHAUSTIVE_SEARCH
         int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, periodic);
+#else
+        int const n_neighbor = tree->neighbor_search(p_i, neighbor_list, false);
+#endif
         p_i.neighbor = n_neighbor;
 
         // density

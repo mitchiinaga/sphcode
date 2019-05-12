@@ -229,7 +229,7 @@ void Solver::run()
         m_sim->update_time();
         t = m_sim->get_time();
         
-        // 1ï¿½bï¿½ï¿½ï¿½Æ‚É‰ï¿½Êoï¿½Í‚ï¿½ï¿½ï¿½
+        // 1•b‚²‚Æ‚É‰æ–Êo—Í‚·‚é
         const auto t_cout_f = std::chrono::system_clock::now();
         const real t_cout_s = std::chrono::duration_cast<std::chrono::seconds>(t_cout_f - t_cout_i).count();
         if(t_cout_s >= 1.0) {

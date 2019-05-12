@@ -5,6 +5,7 @@
 #include "particle.hpp"
 #include "periodic.hpp"
 #include "simulation.hpp"
+#include "bhtree.hpp"
 #include "kernel/kernel_function.hpp"
 
 namespace sph
@@ -21,6 +22,7 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
     auto * periodic = sim->get_periodic().get();
     const int num = sim->get_particle_num();
     auto * kernel = sim->get_kernel().get();
+    auto * tree = sim->get_tree().get();
 
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {
@@ -28,7 +30,11 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
         std::vector<int> neighbor_list(m_neighbor_number * neighbor_list_size);
         
         // neighbor search
+#ifdef EXHAUSTIVE_SEARCH
         int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, periodic);
+#else
+        int const n_neighbor = tree->neighbor_search(p_i, neighbor_list, true);
+#endif
 
         // fluid force
         const vec_t & r_i = p_i.pos;

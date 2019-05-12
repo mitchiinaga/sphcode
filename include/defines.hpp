@@ -29,3 +29,5 @@ inline real pow5(real x) { return x * x * x * x * x; }
 inline real pow6(real x) { return x * x * x * x * x * x; }
 
 constexpr int neighbor_list_size = 10;
+
+//#define EXHAUSTIVE_SEARCH
