@@ -48,6 +48,8 @@ void BHTree::resize(const int particle_num, const int tree_size)
 
 void BHTree::make(std::vector<SPHParticle> & particles, const int particle_num)
 {
+    m_root.root_clear();
+
     if(!m_is_periodic) {
         omp_real r_min[DIM];
         omp_real r_max[DIM];
@@ -114,9 +116,7 @@ int BHTree::neighbor_search(const SPHParticle & p_i, std::vector<int> & neighbor
 
 void BHTree::BHNode::create_tree(BHNode * & nodes, int & remaind, const int max_level, const int leaf_particle_num)
 {
-    for(int i = 0; i < NCHILD; ++i) {
-        childs[i] = nullptr;
-    }
+    std::fill(childs, childs + NCHILD, nullptr);
 
     auto * pp = first;
     do {
@@ -134,12 +134,10 @@ void BHTree::BHNode::create_tree(BHNode * & nodes, int & remaind, const int max_
 
             if(child->num > leaf_particle_num && level < max_level) {
                 child->create_tree(nodes, remaind, max_level, leaf_particle_num);
+            } else {
+                child->is_leaf = true;
             }
         }
-    }
-
-    if(!num_child) {
-        is_leaf = true;
     }
 }
 
@@ -201,9 +199,11 @@ real BHTree::BHNode::set_kernel()
     } else {
         for(int i = 0; i < NCHILD; ++i) {
             auto * child = childs[i];
-            const real h = child->set_kernel();
-            if(h > kernel) {
-                kernel = h;
+            if(child) {
+                const real h = child->set_kernel();
+                if(h > kernel) {
+                    kernel = h;
+                }
             }
         }
     }

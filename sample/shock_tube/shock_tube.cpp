@@ -9,9 +9,9 @@ namespace sph
 
 void Solver::make_shock_tube()
 {
-    if(DIM != 1) {
-        THROW_ERROR("DIM != 1");
-    }
+#if DIM != 1
+    THROW_ERROR("DIM != 1");
+#else
 
     const int N = boost::any_cast<int>(m_sample_parameters["N"]);
     const real dx_r = 0.5 / N;
@@ -50,6 +50,7 @@ void Solver::make_shock_tube()
 
     m_sim->set_particles(p);
     m_sim->set_particle_num(p.size());
+#endif
 }
 
 }

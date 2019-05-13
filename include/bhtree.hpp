@@ -40,7 +40,16 @@ class BHTree
             edge = 0.0;
             level = 0;
             kernel_size = 0.0;
-            bool is_leaf = false;
+            is_leaf = false;
+        }
+
+        void root_clear() {
+            first = nullptr;
+            mass = 0.0;
+            num = 0;
+            m_center = 0.0;
+            kernel_size = 0.0;
+            is_leaf = false;
         }
 
         void create_tree(BHNode * & nodes, int & remaind, const int max_level, const int leaf_particle_num);

@@ -9,9 +9,9 @@ namespace sph
 
 void Solver::make_hydrostatic()
 {
-    if(DIM != 2) {
-        THROW_ERROR("DIM != 2");
-    }
+#if DIM != 2
+    THROW_ERROR("DIM != 2");
+#else
 
     const int N = boost::any_cast<int>(m_sample_parameters["N"]);
     const real dx1 = 0.5 / N;
@@ -70,6 +70,7 @@ void Solver::make_hydrostatic()
 
     m_sim->set_particles(p);
     m_sim->set_particle_num(p.size());
+#endif
 }
 
 }

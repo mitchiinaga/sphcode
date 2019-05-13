@@ -31,7 +31,9 @@ real vortex_pressure(const real r)
 
 void Solver::make_gresho_chan_vortex()
 {
-#if DIM == 2
+#if DIM != 2
+    THROW_ERROR("DIM != 2");
+#else
     const int N = boost::any_cast<int>(m_sample_parameters["N"]);
     const real dx = 1.0 / N;
 
@@ -68,8 +70,6 @@ void Solver::make_gresho_chan_vortex()
 
     m_sim->set_particles(p);
     m_sim->set_particle_num(p.size());
-#else
-    THROW_ERROR("DIM != 2");
 #endif
 }
 
