@@ -4,6 +4,7 @@
     "avAlpha" : 1.0,
     "neighborNumber" : 32,
     "useBalsaraSwitch" : true,
+    "leafParticleNumber" : 32,
     "gamma" : 1.66666666666666666666666666666666667,
     "kernel" : "wendland",
     "N" : 64,

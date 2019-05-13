@@ -4,6 +4,7 @@
     "avAlpha" : 1.0,
     "neighborNumber" : 16,
     "useBalsaraSwitch" : true,
+    "leafParticleNumber" : 16,
     "gamma" : 1.66666666666666666666666666666666667,
     "kernel" : "cubic_spline",
     "N" : 64,
