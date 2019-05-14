@@ -2,7 +2,6 @@
 
 #include "parameters.hpp"
 #include "pre_interaction.hpp"
-#include "particle.hpp"
 #include "simulation.hpp"
 #include "periodic.hpp"
 #include "openmp.hpp"
@@ -28,7 +27,12 @@ void PreInteraction::initialize(std::shared_ptr<SPHParameters> param)
     m_use_balsara_switch = param->av.use_balsara_switch;
     m_gamma = param->physics.gamma;
     m_neighbor_number = param->physics.neighbor_number;
-    m_kernel_ratio = 1.0;
+    m_iteration = param->iterative_sml;
+    if(m_iteration) {
+        m_kernel_ratio = 1.2;
+    } else {
+        m_kernel_ratio = 1.0;
+    }
 }
 
 void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
@@ -51,17 +55,20 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
         constexpr real A = DIM == 1 ? 2.0 :
                            DIM == 2 ? M_PI :
                                       4.0 * M_PI / 3.0;
-        p_i.sml = std::pow(m_neighbor_number * p_i.mass / (p_i.dens * A), 1.0 / DIM);
+        p_i.sml = std::pow(m_neighbor_number * p_i.mass / (p_i.dens * A), 1.0 / DIM) * m_kernel_ratio;
         
         // neighbor search
 #ifdef EXHAUSTIVE_SEARCH
-        int const n_neighbor = exhaustive_search(p_i, p_i.sml * m_kernel_ratio, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, periodic, false);
+        int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, periodic, false);
 #else
         int const n_neighbor = tree->neighbor_search(p_i, neighbor_list, false);
 #endif
         p_i.neighbor = n_neighbor;
 
         // smoothing length
+        if(m_iteration) {
+            p_i.sml = newton_raphson(p_i, particles, neighbor_list, n_neighbor);
+        }
 
         // density etc.
         real dens_i = 0.0;
@@ -206,6 +213,13 @@ void PreInteraction::initial_smoothing(std::shared_ptr<Simulation> sim)
 
         p_i.dens = dens_i;
     }
+}
+
+real PreInteraction::newton_raphson(const SPHParticle & p_i, const std::vector<SPHParticle> & particles, const std::vector<int> & neighbor_list, int const n_neighbor)
+{
+
+    real h_i = p_i.sml / m_kernel_ratio;
+    return 0;
 }
 
 }

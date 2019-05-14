@@ -45,6 +45,8 @@ struct SPHParameters {
 
     KernelType kernel;
 
+    bool iterative_sml;
+
     struct Periodic {
         bool is_valid;
         real range_max[DIM];

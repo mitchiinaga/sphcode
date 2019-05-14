@@ -1,10 +1,12 @@
 #pragma once
 
+#include <vector>
+
 #include "module.hpp"
+#include "particle.hpp"
 
 namespace sph
 {
-class SPHParticle;
 class Periodic;
 
 class PreInteraction : public Module {
@@ -16,6 +18,9 @@ class PreInteraction : public Module {
     real m_gamma;
     int  m_neighbor_number;
     real m_kernel_ratio;
+    bool m_iteration;
+
+    real newton_raphson(const SPHParticle & p_i, const std::vector<SPHParticle> & particles, const std::vector<int> & neighbor_list, int const n_neighbor);
 
 public:
     void initialize(std::shared_ptr<SPHParameters> param) override;

@@ -89,6 +89,14 @@ Solver::Solver(int argc, char * argv[])
         THROW_ERROR("kernel is unknown.");
     }
 
+    if(m_param->iterative_sml) {
+        WRITE_LOG << "iterative calculation for smoothing length is valid.";
+    }
+
+    if(m_param->periodic.is_valid) {
+        WRITE_LOG << "Periodic boundary condition is valid.";
+    }
+
     switch(m_sample) {
 #define WRITE_SAMPLE(a, b) case a: WRITE_LOG << "Sample: " b " test"; break
         WRITE_SAMPLE(Sample::ShockTube, "shock tube");
@@ -173,6 +181,9 @@ void Solver::read_parameterfile(const char * filename)
     } else {
         THROW_ERROR("kernel is unknown.");
     }
+
+    // smoothing length
+    m_param->iterative_sml = input.get<bool>("iterativeSmoothingLength", true);
 
     // periodic
     m_param->periodic.is_valid = input.get<bool>("periodic", false);
