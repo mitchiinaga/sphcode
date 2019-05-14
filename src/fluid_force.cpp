@@ -1,5 +1,3 @@
-#include <algorithm>
-
 #include "defines.hpp"
 #include "fluid_force.hpp"
 #include "particle.hpp"
@@ -7,6 +5,10 @@
 #include "simulation.hpp"
 #include "bhtree.hpp"
 #include "kernel/kernel_function.hpp"
+
+#ifdef EXHAUSTIVE_SEARCH
+#include "exhaustive_search.hpp"
+#endif
 
 namespace sph
 {
@@ -31,7 +33,7 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
         
         // neighbor search
 #ifdef EXHAUSTIVE_SEARCH
-        int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, periodic);
+        int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, periodic, true);
 #else
         int const n_neighbor = tree->neighbor_search(p_i, neighbor_list, true);
 #endif
@@ -95,38 +97,6 @@ real FluidForce::artificial_viscosity(const SPHParticle & p_i, const SPHParticle
     } else {
         return 0;
     }
-}
-
-int FluidForce::exhaustive_search(
-    SPHParticle & p_i,
-    const real kernel_size,
-    const std::vector<SPHParticle> & particles,
-    const int num,
-    std::vector<int> & neighbor_list,
-    const int list_size,
-    Periodic const * periodic)
-{
-    const real kernel_size_i2 = kernel_size * kernel_size;
-    const vec_t & pos_i = p_i.pos;
-    int count = 0;
-    for(int j = 0; j < num; ++j) {
-        const auto & p_j = particles[j];
-        const vec_t r_ij = periodic->calc_r_ij(pos_i, p_j.pos);
-        const real r2 = abs2(r_ij);
-        const real kernel_size2 = std::max(kernel_size_i2, p_j.sml * p_j.sml);
-        if(r2 < kernel_size2) {
-            neighbor_list[count] = j;
-            ++count;
-        }
-    }
-
-    std::sort(neighbor_list.begin(), neighbor_list.begin() + count, [&](const int a, const int b) {
-        const vec_t r_ia = periodic->calc_r_ij(pos_i, particles[a].pos);
-        const vec_t r_ib = periodic->calc_r_ij(pos_i, particles[b].pos);
-        return abs2(r_ia) < abs2(r_ib);
-    });
-
-    return count;
 }
 
 }
