@@ -61,13 +61,13 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
 #ifdef EXHAUSTIVE_SEARCH
         int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, periodic, false);
 #else
-        int const n_neighbor = tree->neighbor_search(p_i, neighbor_list, false);
+        int const n_neighbor = tree->neighbor_search(p_i, neighbor_list, particles, false);
 #endif
         p_i.neighbor = n_neighbor;
 
         // smoothing length
         if(m_iteration) {
-            p_i.sml = newton_raphson(p_i, particles, neighbor_list, n_neighbor);
+            p_i.sml = newton_raphson(p_i, particles, neighbor_list, n_neighbor, periodic, kernel);
         }
 
         // density etc.
@@ -179,6 +179,7 @@ void PreInteraction::initial_smoothing(std::shared_ptr<Simulation> sim)
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {
         auto & p_i = particles[i];
+        const vec_t & pos_i = p_i.pos;
         std::vector<int> neighbor_list(m_neighbor_number * neighbor_list_size);
 
         // guess smoothing length
@@ -191,13 +192,12 @@ void PreInteraction::initial_smoothing(std::shared_ptr<Simulation> sim)
 #ifdef EXHAUSTIVE_SEARCH
         int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, periodic, false);
 #else
-        int const n_neighbor = tree->neighbor_search(p_i, neighbor_list, false);
+        int const n_neighbor = tree->neighbor_search(p_i, neighbor_list, particles, false);
 #endif
         p_i.neighbor = n_neighbor;
 
         // density
         real dens_i = 0.0;
-        const vec_t & pos_i = p_i.pos;
         for(int n = 0; n < n_neighbor; ++n) {
             int const j = neighbor_list[n];
             auto & p_j = particles[j];
@@ -215,11 +215,67 @@ void PreInteraction::initial_smoothing(std::shared_ptr<Simulation> sim)
     }
 }
 
-real PreInteraction::newton_raphson(const SPHParticle & p_i, const std::vector<SPHParticle> & particles, const std::vector<int> & neighbor_list, int const n_neighbor)
-{
+inline real powh_(const real h) {
+#if DIM == 1
+    return 1;
+#elif DIM == 2
+    return h;
+#elif DIM == 3
+    return h * h;
+#endif
+}
 
+real PreInteraction::newton_raphson(
+    const SPHParticle & p_i,
+    const std::vector<SPHParticle> & particles,
+    const std::vector<int> & neighbor_list,
+    const int n_neighbor,
+    const Periodic * periodic,
+    const KernelFunction * kernel
+)
+{
     real h_i = p_i.sml / m_kernel_ratio;
-    return 0;
+    constexpr real A = DIM == 1 ? 2.0 :
+                       DIM == 2 ? M_PI :
+                                  4.0 * M_PI / 3.0;
+    const real b = p_i.mass * m_neighbor_number / A;
+
+    // f = rho h^d - b
+    // f' = drho/dh h^d + d rho h^{d-1}
+
+    constexpr real epsilon = 1e-5;
+    constexpr int max_iter = 100;
+    const auto & r_i = p_i.pos;
+    for(int i = 0; i < max_iter; ++i) {
+        const real h_b = h_i;
+
+        real dens = 0.0;
+        real ddens = 0.0;
+        for(int n = 0; n < n_neighbor; ++n) {
+            int const j = neighbor_list[n];
+            auto & p_j = particles[j];
+            const vec_t r_ij = periodic->calc_r_ij(r_i, p_j.pos);
+            const real r = std::abs(r_ij);
+
+            if(r >= h_i) {
+                break;
+            }
+
+            dens += p_j.mass * kernel->w(r, h_i);
+            ddens += p_j.mass * kernel->dhw(r, h_i);
+        }
+
+        const real f = dens * powh(h_i) - b;
+        const real df = ddens * powh(h_i) + DIM * dens * powh_(h_i);
+
+        h_i -= f / df;
+
+        if(std::abs(h_i - h_b) < (h_i + h_b) * epsilon) {
+            break;
+        }
+    }
+
+    return h_i;
 }
 
 }

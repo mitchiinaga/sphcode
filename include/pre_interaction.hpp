@@ -8,6 +8,7 @@
 namespace sph
 {
 class Periodic;
+class KernelFunction;
 
 class PreInteraction : public Module {
     bool m_use_balsara_switch;
@@ -20,7 +21,14 @@ class PreInteraction : public Module {
     real m_kernel_ratio;
     bool m_iteration;
 
-    real newton_raphson(const SPHParticle & p_i, const std::vector<SPHParticle> & particles, const std::vector<int> & neighbor_list, int const n_neighbor);
+    real newton_raphson(
+        const SPHParticle & p_i,
+        const std::vector<SPHParticle> & particles,
+        const std::vector<int> & neighbor_list,
+        const int n_neighbor,
+        const Periodic * periodic,
+        const KernelFunction * kernel
+    );
 
 public:
     void initialize(std::shared_ptr<SPHParameters> param) override;

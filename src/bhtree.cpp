@@ -105,10 +105,17 @@ void BHTree::set_kernel()
     m_root.set_kernel();
 }
 
-int BHTree::neighbor_search(const SPHParticle & p_i, std::vector<int> & neighbor_list, const bool is_ij)
+int BHTree::neighbor_search(const SPHParticle & p_i, std::vector<int> & neighbor_list, const std::vector<SPHParticle> & particles, const bool is_ij)
 {
     int n_neighbor = 0;
     m_root.neighbor_search(p_i, neighbor_list, n_neighbor, is_ij, m_periodic.get());
+
+    const auto & pos_i = p_i.pos;
+    std::sort(neighbor_list.begin(), neighbor_list.begin() + n_neighbor, [&](const int a, const int b) {
+        const vec_t r_ia = m_periodic->calc_r_ij(pos_i, particles[a].pos);
+        const vec_t r_ib = m_periodic->calc_r_ij(pos_i, particles[b].pos);
+        return abs2(r_ia) < abs2(r_ib);
+    });
     return n_neighbor;
 }
 

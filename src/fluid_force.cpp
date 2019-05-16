@@ -35,7 +35,7 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
 #ifdef EXHAUSTIVE_SEARCH
         int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, periodic, true);
 #else
-        int const n_neighbor = tree->neighbor_search(p_i, neighbor_list, true);
+        int const n_neighbor = tree->neighbor_search(p_i, neighbor_list, particles, true);
 #endif
 
         // fluid force

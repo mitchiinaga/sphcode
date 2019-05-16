@@ -27,20 +27,20 @@ public:
         assert(DIM != 1);
     }
 
-    real w(const real r, const real h)
+    real w(const real r, const real h) const
     {
         const real q = r / h;
         return sigma_c4 / powh(h) * pow6(0.5 * (1.0 - q + std::abs(1.0 - q))) * (1.0 + 6.0 * q + 35.0 / 3.0 * q * q);
     }
 
-    vec_t dw(const vec_t &rij, const real r, const real h)
+    vec_t dw(const vec_t &rij, const real r, const real h) const
     {
         const real q = r / h;
         const real c = -56.0 / 3.0 * sigma_c4 / (powh(h) * sqr(h)) * pow5(0.5 * (1.0 - q + std::abs(1.0 - q))) * (1.0 + 5.0 * q);
         return rij * c;
     }
 
-    real dhw(const real r, const real h)
+    real dhw(const real r, const real h) const
     {
         const double q = r / h;
         return -sigma_c4 / (powh(h) * h * 3.0) * pow5(0.5 * (1.0 - q + std::abs(1.0 - q)))

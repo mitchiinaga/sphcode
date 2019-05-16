@@ -24,14 +24,14 @@ public:
     {
     }
 
-    real w(const real r, const real h)
+    real w(const real r, const real h) const
     {
         const real h_ = h * 0.5;
         const real q = r / h_;
         return sigma_cubic / powh(h_) * (0.25 * pow3(0.5 * (2.0 - q + std::abs(2.0 - q))) - pow3(0.5 * (1.0 - q + std::abs(1.0 - q))));
     }
 
-    vec_t dw(const vec_t &rij, const real r, const real h)
+    vec_t dw(const vec_t &rij, const real r, const real h) const
     {
         if(r == 0.0) {
             return vec_t(0);
@@ -42,7 +42,7 @@ public:
         return rij * c;
     }
 
-    real dhw(const real r, const real h)
+    real dhw(const real r, const real h) const
     {
         const real h_ = h * 0.5;
         const real q = r / h_;

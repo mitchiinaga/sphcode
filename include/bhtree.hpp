@@ -72,7 +72,7 @@ public:
     void resize(const int particle_num, const int tree_size = 5);
     void make(std::vector<SPHParticle> & particles, const int particle_num);
     void set_kernel();
-    int neighbor_search(const SPHParticle & p_i, std::vector<int> & neighbor_list, const bool is_ij = false);
+    int neighbor_search(const SPHParticle & p_i, std::vector<int> & neighbor_list, const std::vector<SPHParticle> & particles, const bool is_ij = false);
 };
 
 }
