@@ -60,6 +60,9 @@
     <ClCompile Include="src\exhaustive_search.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sample\khi\khi.cpp">
+      <Filter>Source Files\sample</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\defines.hpp">

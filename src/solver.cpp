@@ -102,6 +102,7 @@ Solver::Solver(int argc, char * argv[])
         WRITE_SAMPLE(Sample::ShockTube, "shock tube");
         WRITE_SAMPLE(Sample::GreshoChanVortex, "Gresho-Chan vortex");
         WRITE_SAMPLE(Sample::HydroStatic, "Hydro static");
+        WRITE_SAMPLE(Sample::KHI, "Kelvin-Helmholtz Instability");
 #undef WRITE_SAMPLE
     }
 
@@ -131,6 +132,10 @@ void Solver::read_parameterfile(const char * filename)
         pt::read_json("sample/hydrostatic/hydrostatic.json", input);
         m_sample = Sample::HydroStatic;
         m_sample_parameters["N"] = input.get<int>("N", 32);
+    } else if(name_str == "khi") {
+        pt::read_json("sample/khi/khi.json", input);
+        m_sample = Sample::KHI;
+        m_sample_parameters["N"] = input.get<int>("N", 128);
     } else {
         pt::read_json(filename, input);
         m_sample = Sample::DoNotUse;
@@ -362,6 +367,7 @@ void Solver::make_initial_condition()
         MAKE_SAMPLE(Sample::ShockTube, shock_tube);
         MAKE_SAMPLE(Sample::GreshoChanVortex, gresho_chan_vortex);
         MAKE_SAMPLE(Sample::HydroStatic, hydrostatic);
+        MAKE_SAMPLE(Sample::KHI, khi);
         case Sample::DoNotUse:
             // make distribution
             break;
