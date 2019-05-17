@@ -16,6 +16,10 @@ namespace sph
 void FluidForce::initialize(std::shared_ptr<SPHParameters> param)
 {
     m_neighbor_number = param->physics.neighbor_number;
+    m_use_ac = param->ac.is_valid;
+    if(m_use_ac) {
+        m_alpha_ac = param->ac.alpha;
+    }
 }
 
 void FluidForce::calculation(std::shared_ptr<Simulation> sim)
@@ -64,13 +68,14 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
             const vec_t v_ij = v_i - p_j.vel;
 
             const real pi_ij = artificial_viscosity(p_i, p_j, r_ij);
+            const real dene_ac = m_use_ac ? artificial_conductivity(p_i, p_j, r_ij, dw_ij) : 0.0;
 
 #ifdef WITHOUT_GRADH
             acc -= dw_ij * (p_j.mass * (p_per_rho2_i + p_j.pres / sqr(p_j.dens) + pi_ij));
             dene += p_j.mass * (p_per_rho2_i + 0.5 * pi_ij) * inner_product(v_ij, dw_ij);
 #else
             acc -= dw_i * (p_j.mass * (p_per_rho2_i * gradh_i + 0.5 * pi_ij)) + dw_j * (p_j.mass * (p_j.pres / sqr(p_j.dens) * p_j.gradh + 0.5 * pi_ij));
-            dene += p_j.mass * p_per_rho2_i * gradh_i * inner_product(v_ij, dw_i) + 0.5 * p_j.mass * pi_ij * inner_product(v_ij, dw_ij);
+            dene += p_j.mass * p_per_rho2_i * gradh_i * inner_product(v_ij, dw_i) + 0.5 * p_j.mass * pi_ij * inner_product(v_ij, dw_ij) + dene_ac;
 #endif
         }
 
@@ -97,6 +102,13 @@ real FluidForce::artificial_viscosity(const SPHParticle & p_i, const SPHParticle
     } else {
         return 0;
     }
+}
+
+real FluidForce::artificial_conductivity(const SPHParticle & p_i, const SPHParticle & p_j, const vec_t & r_ij, const vec_t & dw_ij)
+{
+    // Price (2008)
+    const real v_sig = std::sqrt(2.0 * std::abs(p_i.pres - p_j.pres) / (p_i.dens + p_j.dens));
+    return m_alpha_ac * p_j.mass * v_sig * (p_i.ene - p_j.ene) * inner_product(dw_ij, r_ij) / std::abs(r_ij);
 }
 
 }

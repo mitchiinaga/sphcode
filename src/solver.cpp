@@ -72,6 +72,11 @@ Solver::Solver(int argc, char * argv[])
         WRITE_LOG << "* epsilon = " << m_param->av.epsilon;
     }
 
+    if(m_param->ac.is_valid) {
+        WRITE_LOG << "Artificial Conductivity";
+        WRITE_LOG << "* alpha = " << m_param->ac.alpha;
+    }
+
     WRITE_LOG << "Tree";
     WRITE_LOG << "* max tree level       = " << m_param->tree.max_level;
     WRITE_LOG << "* leaf particle number = " << m_param->tree.leaf_particle_num;
@@ -167,6 +172,12 @@ void Solver::read_parameterfile(const char * filename)
             THROW_ERROR("alphaMax < alphaMin");
         }
         m_param->av.epsilon = input.get<real>("epsilonAV", 0.2);
+    }
+
+    // Artificial Conductivity
+    m_param->ac.is_valid = input.get<bool>("useArtificialConductivity", false);
+    if(m_param->ac.is_valid) {
+        m_param->ac.alpha = input.get<real>("alphaAC", 1.0);
     }
 
     // Tree

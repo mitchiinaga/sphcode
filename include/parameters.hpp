@@ -33,6 +33,11 @@ struct SPHParameters {
         real epsilon; // tau = h / (epsilon * c)
     } av;
 
+    struct ArtificialConductivity {
+        real alpha;
+        bool is_valid;
+    } ac;
+
     struct Tree {
         int max_level;
         int leaf_particle_num;

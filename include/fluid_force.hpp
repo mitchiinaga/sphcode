@@ -9,9 +9,12 @@ class SPHParticle;
 class Periodic;
 
 class FluidForce : public Module {
-    int      m_neighbor_number;
+    int  m_neighbor_number;
+    bool m_use_ac;
+    real m_alpha_ac;
 
     real artificial_viscosity(const SPHParticle & p_i, const SPHParticle & p_j, const vec_t & r_ij);
+    real artificial_conductivity(const SPHParticle & p_i, const SPHParticle & p_j, const vec_t & r_ij, const vec_t & dw_ij);
 
 public:
     void initialize(std::shared_ptr<SPHParameters> param) override;
