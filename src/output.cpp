@@ -7,7 +7,6 @@
 #include "defines.hpp"
 #include "particle.hpp"
 #include "simulation.hpp"
-#include "openmp.hpp"
 
 namespace sph
 {
@@ -70,21 +69,21 @@ void Output::output_energy(std::shared_ptr<Simulation> sim)
     const int num = sim->get_particle_num();
     const real time = sim->get_time();
 
-    omp_real kinetic(0.0);
-    omp_real thermal(0.0);
-    omp_real potential(0.0);
+    real kinetic = 0.0;
+    real thermal = 0.0;
+    real potential = 0.0;
 
-#pragma omp parallel for
+#pragma omp parallel for reduction(+: kinetic, thermal, potential)
     for(int i = 0; i < num; ++i) {
         const auto & p_i = particles[i];
-        kinetic.get() += 0.5 * p_i.mass * abs2(p_i.vel);
-        thermal.get() += p_i.mass * p_i.ene;
+        kinetic += 0.5 * p_i.mass * abs2(p_i.vel);
+        thermal += p_i.mass * p_i.ene;
         // potential;
     }
 
-    const real e_k = kinetic.sum();
-    const real e_t = thermal.sum();
-    const real e_p = potential.sum();
+    const real e_k = kinetic;
+    const real e_t = thermal;
+    const real e_p = potential;
     const real total = e_k + e_t + e_p;
 
     m_out_energy << time << " " << e_k << " " << e_t << " " << e_p << " " << total << std::endl;
