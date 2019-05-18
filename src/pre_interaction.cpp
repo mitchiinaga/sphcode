@@ -59,15 +59,13 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
         
         // neighbor search
 #ifdef EXHAUSTIVE_SEARCH
-        int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, periodic, false);
+        const int n_neighbor_tmp = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, periodic, false);
 #else
-        int const n_neighbor = tree->neighbor_search(p_i, neighbor_list, particles, false);
+        const int n_neighbor_tmp = tree->neighbor_search(p_i, neighbor_list, particles, false);
 #endif
-        p_i.neighbor = n_neighbor;
-
         // smoothing length
         if(m_iteration) {
-            p_i.sml = newton_raphson(p_i, particles, neighbor_list, n_neighbor, periodic, kernel);
+            p_i.sml = newton_raphson(p_i, particles, neighbor_list, n_neighbor_tmp, periodic, kernel);
         }
 
         // density etc.
@@ -75,7 +73,8 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
         real dh_dens_i = 0.0;
         real v_sig_max = p_i.sound * 2.0;
         const vec_t & pos_i = p_i.pos;
-        for(int n = 0; n < n_neighbor; ++n) {
+        int n_neighbor = 0;
+        for(int n = 0; n < n_neighbor_tmp; ++n) {
             int const j = neighbor_list[n];
             auto & p_j = particles[j];
             const vec_t r_ij = periodic->calc_r_ij(pos_i, p_j.pos);
@@ -85,6 +84,7 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
                 break;
             }
 
+            ++n_neighbor;
             dens_i += p_j.mass * kernel->w(r, p_i.sml);
             dh_dens_i += p_j.mass * kernel->dhw(r, p_i.sml);
 
@@ -99,6 +99,7 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
         p_i.dens = dens_i;
         p_i.pres = (m_gamma - 1.0) * dens_i * p_i.ene;
         p_i.gradh = 1.0 / (1.0 + p_i.sml / (DIM * dens_i) * dh_dens_i);
+        p_i.neighbor = n_neighbor;
 
         const real h_per_v_sig_i = p_i.sml / v_sig_max;
         if(h_per_v_sig.get() > h_per_v_sig_i) {
@@ -120,11 +121,6 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
                 auto & p_j = particles[j];
                 const vec_t r_ij = periodic->calc_r_ij(pos_i, p_j.pos);
                 const real r = std::abs(r_ij);
-
-                if(r >= p_i.sml) {
-                    break;
-                }
-
                 const vec_t dw = kernel->dw(r_ij, r, p_i.sml);
                 const vec_t v_ij = p_i.vel - p_j.vel;
                 div_v -= p_j.mass * inner_product(v_ij, dw);
@@ -148,11 +144,6 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
                 auto & p_j = particles[j];
                 const vec_t r_ij = periodic->calc_r_ij(pos_i, p_j.pos);
                 const real r = std::abs(r_ij);
-
-                if(r >= p_i.sml) {
-                    break;
-                }
-
                 const vec_t dw = kernel->dw(r_ij, r, p_i.sml);
                 const vec_t v_ij = p_i.vel - p_j.vel;
                 div_v -= p_j.mass * inner_product(v_ij, dw);
@@ -194,7 +185,6 @@ void PreInteraction::initial_smoothing(std::shared_ptr<Simulation> sim)
 #else
         int const n_neighbor = tree->neighbor_search(p_i, neighbor_list, particles, false);
 #endif
-        p_i.neighbor = n_neighbor;
 
         // density
         real dens_i = 0.0;
@@ -244,7 +234,7 @@ real PreInteraction::newton_raphson(
     // f' = drho/dh h^d + d rho h^{d-1}
 
     constexpr real epsilon = 1e-5;
-    constexpr int max_iter = 100;
+    constexpr int max_iter = 10;
     const auto & r_i = p_i.pos;
     for(int i = 0; i < max_iter; ++i) {
         const real h_b = h_i;
@@ -271,11 +261,11 @@ real PreInteraction::newton_raphson(
         h_i -= f / df;
 
         if(std::abs(h_i - h_b) < (h_i + h_b) * epsilon) {
-            break;
+            return h_i;
         }
     }
 
-    return h_i;
+    return p_i.sml / m_kernel_ratio;
 }
 
 }
