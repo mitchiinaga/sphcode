@@ -119,12 +119,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="sample\evrard\evrard.cpp" />
-    <ClCompile Include="sample\gresho_chan_vortex\gresho_chan_vortex.cpp" />
-    <ClCompile Include="sample\hydrostatic\hydrostatic.cpp" />
-    <ClCompile Include="sample\khi\khi.cpp" />
-    <ClCompile Include="sample\pairing_instability\pairing_instability.cpp" />
-    <ClCompile Include="sample\shock_tube\shock_tube.cpp" />
     <ClCompile Include="src\exhaustive_search.cpp" />
     <ClCompile Include="src\fluid_force.cpp" />
     <ClCompile Include="src\gravity_force.cpp" />
@@ -132,6 +126,12 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\output.cpp" />
     <ClCompile Include="src\pre_interaction.cpp" />
+    <ClCompile Include="src\sample\evrard.cpp" />
+    <ClCompile Include="src\sample\gresho_chan_vortex.cpp" />
+    <ClCompile Include="src\sample\hydrostatic.cpp" />
+    <ClCompile Include="src\sample\khi.cpp" />
+    <ClCompile Include="src\sample\pairing_instability.cpp" />
+    <ClCompile Include="src\sample\shock_tube.cpp" />
     <ClCompile Include="src\simulation.cpp" />
     <ClCompile Include="src\solver.cpp" />
     <ClCompile Include="src\timestep.cpp" />

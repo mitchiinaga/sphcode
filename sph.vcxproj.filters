@@ -45,31 +45,31 @@
     <ClCompile Include="src\fluid_force.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sample\shock_tube\shock_tube.cpp">
-      <Filter>Source Files\sample</Filter>
-    </ClCompile>
-    <ClCompile Include="sample\gresho_chan_vortex\gresho_chan_vortex.cpp">
-      <Filter>Source Files\sample</Filter>
-    </ClCompile>
-    <ClCompile Include="sample\hydrostatic\hydrostatic.cpp">
-      <Filter>Source Files\sample</Filter>
-    </ClCompile>
     <ClCompile Include="src\bhtree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\exhaustive_search.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sample\khi\khi.cpp">
-      <Filter>Source Files\sample</Filter>
-    </ClCompile>
-    <ClCompile Include="sample\evrard\evrard.cpp">
-      <Filter>Source Files\sample</Filter>
-    </ClCompile>
     <ClCompile Include="src\gravity_force.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sample\pairing_instability\pairing_instability.cpp">
+    <ClCompile Include="src\sample\evrard.cpp">
+      <Filter>Source Files\sample</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sample\gresho_chan_vortex.cpp">
+      <Filter>Source Files\sample</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sample\hydrostatic.cpp">
+      <Filter>Source Files\sample</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sample\khi.cpp">
+      <Filter>Source Files\sample</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sample\pairing_instability.cpp">
+      <Filter>Source Files\sample</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sample\shock_tube.cpp">
       <Filter>Source Files\sample</Filter>
     </ClCompile>
   </ItemGroup>

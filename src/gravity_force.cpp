@@ -56,9 +56,12 @@ void GravityForce::calculation(std::shared_ptr<Simulation> sim)
     }
 
     auto & particles = sim->get_particles();
-    auto * periodic = sim->get_periodic().get();
     const int num = sim->get_particle_num();
+#ifdef EXHAUSTIVE_SEARCH
+    auto * periodic = sim->get_periodic().get();
+#else
     auto * tree = sim->get_tree().get();
+#endif
 
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {

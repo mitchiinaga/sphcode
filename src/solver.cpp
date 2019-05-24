@@ -117,6 +117,8 @@ Solver::Solver(int argc, char * argv[])
         WRITE_SAMPLE(Sample::KHI, "Kelvin-Helmholtz Instability");
         WRITE_SAMPLE(Sample::Evrard, "Evrard collapse");
 #undef WRITE_SAMPLE
+        default:
+            break;
     }
 
     WRITE_LOG;

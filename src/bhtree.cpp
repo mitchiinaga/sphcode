@@ -307,8 +307,6 @@ void BHTree::BHNode::calc_force(SPHParticle & p_i, const real theta2, const real
 
     if(l2 > theta2 * d2) {
         if(is_leaf) {
-            const real h = std::max(p_i.sml, kernel_size);
-            const real h2 = h * h;
             auto * p = first;
             while(p) {
                 const vec_t & r_j = p->pos;
