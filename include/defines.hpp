@@ -4,7 +4,7 @@
 #include <string>
 #include <cstdlib>
 
-#define DIM 3
+#define DIM 2
 typedef double real;
 
 #ifndef M_PI

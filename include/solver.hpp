@@ -23,6 +23,7 @@ class Output;
 enum struct Sample {
     ShockTube,
     GreshoChanVortex,
+    PairingInstability,
     HydroStatic,
     KHI,
     Evrard,
@@ -54,6 +55,7 @@ class Solver {
 
     void make_shock_tube();
     void make_gresho_chan_vortex();
+    void make_pairing_instability();
     void make_hydrostatic();
     void make_khi();
     void make_evrard();

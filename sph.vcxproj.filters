@@ -69,6 +69,9 @@
     <ClCompile Include="src\gravity_force.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sample\pairing_instability\pairing_instability.cpp">
+      <Filter>Source Files\sample</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\defines.hpp">

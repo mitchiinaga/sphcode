@@ -123,6 +123,7 @@
     <ClCompile Include="sample\gresho_chan_vortex\gresho_chan_vortex.cpp" />
     <ClCompile Include="sample\hydrostatic\hydrostatic.cpp" />
     <ClCompile Include="sample\khi\khi.cpp" />
+    <ClCompile Include="sample\pairing_instability\pairing_instability.cpp" />
     <ClCompile Include="sample\shock_tube\shock_tube.cpp" />
     <ClCompile Include="src\exhaustive_search.cpp" />
     <ClCompile Include="src\fluid_force.cpp" />

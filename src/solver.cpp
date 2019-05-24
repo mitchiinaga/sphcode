@@ -112,6 +112,7 @@ Solver::Solver(int argc, char * argv[])
 #define WRITE_SAMPLE(a, b) case a: WRITE_LOG << "Sample: " b " test"; break
         WRITE_SAMPLE(Sample::ShockTube, "shock tube");
         WRITE_SAMPLE(Sample::GreshoChanVortex, "Gresho-Chan vortex");
+        WRITE_SAMPLE(Sample::PairingInstability, "Pairing Instability");
         WRITE_SAMPLE(Sample::HydroStatic, "Hydro static");
         WRITE_SAMPLE(Sample::KHI, "Kelvin-Helmholtz Instability");
         WRITE_SAMPLE(Sample::Evrard, "Evrard collapse");
@@ -139,6 +140,10 @@ void Solver::read_parameterfile(const char * filename)
     } else if(name_str == "gresho_chan_vortex") {
         pt::read_json("sample/gresho_chan_vortex/gresho_chan_vortex.json", input);
         m_sample = Sample::GreshoChanVortex;
+        m_sample_parameters["N"] = input.get<int>("N", 64);
+    } else if(name_str == "pairing_instability") {
+        pt::read_json("sample/pairing_instability/pairing_instability.json", input);
+        m_sample = Sample::PairingInstability;
         m_sample_parameters["N"] = input.get<int>("N", 64);
     } else if(name_str == "hydrostatic") {
         pt::read_json("sample/hydrostatic/hydrostatic.json", input);
@@ -402,6 +407,7 @@ void Solver::make_initial_condition()
 #define MAKE_SAMPLE(a, b) case a: make_##b(); break
         MAKE_SAMPLE(Sample::ShockTube, shock_tube);
         MAKE_SAMPLE(Sample::GreshoChanVortex, gresho_chan_vortex);
+        MAKE_SAMPLE(Sample::PairingInstability, pairing_instability);
         MAKE_SAMPLE(Sample::HydroStatic, hydrostatic);
         MAKE_SAMPLE(Sample::KHI, khi);
         MAKE_SAMPLE(Sample::Evrard, evrard);

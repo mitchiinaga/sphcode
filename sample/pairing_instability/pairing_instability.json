@@ -1,0 +1,13 @@
+{
+    "outputDirectory" : "sample/pairing_instability/results",
+    "endTime" : 1.0,
+    "avAlpha" : 1.0,
+    "neighborNumber" : 32,
+    "leafParticleNumber" : 32,
+    "gamma" : 1.66666666666666666666666666666666667,
+    "kernel" : "cubic_spline",
+    "N" : 64,
+    "periodic" : true,
+    "rangeMax" : [0.5, 0.5],
+    "rangeMin" : [-0.5,-0.5]
+}
