@@ -4,7 +4,7 @@
 #include <string>
 #include <cstdlib>
 
-#define DIM 1
+#define DIM 3
 typedef double real;
 
 #ifndef M_PI
@@ -28,7 +28,7 @@ inline real pow4(real x) { return x * x * x * x; }
 inline real pow5(real x) { return x * x * x * x * x; }
 inline real pow6(real x) { return x * x * x * x * x * x; }
 
-constexpr int neighbor_list_size = 10;
+constexpr int neighbor_list_size = 20;
 
 // for debug
-//#define EXHAUSTIVE_SEARCH
+#define EXHAUSTIVE_SEARCH

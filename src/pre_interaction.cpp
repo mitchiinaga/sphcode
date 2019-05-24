@@ -156,7 +156,10 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
     }
 
     sim->set_h_per_v_sig(h_per_v_sig.min());
+
+#ifndef EXHAUSTIVE_SEARCH
     tree->set_kernel();
+#endif
 }
 
 void PreInteraction::initial_smoothing(std::shared_ptr<Simulation> sim)

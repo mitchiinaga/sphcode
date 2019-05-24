@@ -119,12 +119,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="sample\evrard\evrard.cpp" />
     <ClCompile Include="sample\gresho_chan_vortex\gresho_chan_vortex.cpp" />
     <ClCompile Include="sample\hydrostatic\hydrostatic.cpp" />
     <ClCompile Include="sample\khi\khi.cpp" />
     <ClCompile Include="sample\shock_tube\shock_tube.cpp" />
     <ClCompile Include="src\exhaustive_search.cpp" />
     <ClCompile Include="src\fluid_force.cpp" />
+    <ClCompile Include="src\gravity_force.cpp" />
     <ClCompile Include="src\logger.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\output.cpp" />
@@ -137,6 +139,7 @@
   <ItemGroup>
     <ClInclude Include="include\defines.hpp" />
     <ClInclude Include="include\exhaustive_search.hpp" />
+    <ClInclude Include="include\gravity_force.hpp" />
     <ClInclude Include="include\periodic.hpp" />
     <ClInclude Include="include\exception.hpp" />
     <ClInclude Include="include\fluid_force.hpp" />

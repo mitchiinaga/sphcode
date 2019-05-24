@@ -70,7 +70,7 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
             const real pi_ij = artificial_viscosity(p_i, p_j, r_ij);
             const real dene_ac = m_use_ac ? artificial_conductivity(p_i, p_j, r_ij, dw_ij) : 0.0;
 
-#ifdef WITHOUT_GRADH
+#if 0
             acc -= dw_ij * (p_j.mass * (p_per_rho2_i + p_j.pres / sqr(p_j.dens) + pi_ij));
             dene += p_j.mass * (p_per_rho2_i + 0.5 * pi_ij) * inner_product(v_ij, dw_ij);
 #else

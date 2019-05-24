@@ -25,6 +25,8 @@ public:
 
     real gradh;   // grad-h term
 
+    real phi = 0.0; // potential
+
     int id;
     int neighbor;
     SPHParticle *next = nullptr;

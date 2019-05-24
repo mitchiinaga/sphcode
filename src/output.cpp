@@ -78,7 +78,7 @@ void Output::output_energy(std::shared_ptr<Simulation> sim)
         const auto & p_i = particles[i];
         kinetic += 0.5 * p_i.mass * abs2(p_i.vel);
         thermal += p_i.mass * p_i.ene;
-        // potential;
+        potential += 0.5 * p_i.mass * p_i.phi;
     }
 
     const real e_k = kinetic;

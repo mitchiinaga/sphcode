@@ -57,6 +57,12 @@ struct SPHParameters {
         real range_max[DIM];
         real range_min[DIM];
     } periodic;
+
+    struct Gravity {
+        bool is_valid;
+        real constant;
+        real theta;
+    } gravity;
 };
 
 }

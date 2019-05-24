@@ -63,6 +63,12 @@
     <ClCompile Include="sample\khi\khi.cpp">
       <Filter>Source Files\sample</Filter>
     </ClCompile>
+    <ClCompile Include="sample\evrard\evrard.cpp">
+      <Filter>Source Files\sample</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gravity_force.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\defines.hpp">
@@ -123,6 +129,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\exhaustive_search.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gravity_force.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

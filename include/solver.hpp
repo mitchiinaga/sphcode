@@ -11,6 +11,7 @@
 #include "timestep.hpp"
 #include "pre_interaction.hpp"
 #include "fluid_force.hpp"
+#include "gravity_force.hpp"
 
 namespace sph
 {
@@ -24,6 +25,7 @@ enum struct Sample {
     GreshoChanVortex,
     HydroStatic,
     KHI,
+    Evrard,
     DoNotUse,
 };
 
@@ -37,6 +39,7 @@ class Solver {
     TimeStep       m_timestep;
     PreInteraction m_pre;
     FluidForce     m_fforce;
+    GravityForce   m_gforce;
 
     void read_parameterfile(const char * filename);
     void make_initial_condition();
@@ -53,6 +56,7 @@ class Solver {
     void make_gresho_chan_vortex();
     void make_hydrostatic();
     void make_khi();
+    void make_evrard();
 
 public:
     Solver(int argc, char * argv[]);

@@ -101,6 +101,12 @@ Solver::Solver(int argc, char * argv[])
     if(m_param->periodic.is_valid) {
         WRITE_LOG << "Periodic boundary condition is valid.";
     }
+    
+    if(m_param->gravity.is_valid) {
+        WRITE_LOG << "Gravity is valid.";
+        WRITE_LOG << "G     = " << m_param->gravity.constant;
+        WRITE_LOG << "theta = " << m_param->gravity.theta;
+    }
 
     switch(m_sample) {
 #define WRITE_SAMPLE(a, b) case a: WRITE_LOG << "Sample: " b " test"; break
@@ -108,6 +114,7 @@ Solver::Solver(int argc, char * argv[])
         WRITE_SAMPLE(Sample::GreshoChanVortex, "Gresho-Chan vortex");
         WRITE_SAMPLE(Sample::HydroStatic, "Hydro static");
         WRITE_SAMPLE(Sample::KHI, "Kelvin-Helmholtz Instability");
+        WRITE_SAMPLE(Sample::Evrard, "Evrard collapse");
 #undef WRITE_SAMPLE
     }
 
@@ -141,6 +148,10 @@ void Solver::read_parameterfile(const char * filename)
         pt::read_json("sample/khi/khi.json", input);
         m_sample = Sample::KHI;
         m_sample_parameters["N"] = input.get<int>("N", 128);
+    } else if(name_str == "evrard") {
+        pt::read_json("sample/evrard/evrard.json", input);
+        m_sample = Sample::Evrard;
+        m_sample_parameters["N"] = input.get<int>("N", 20);
     } else {
         pt::read_json(filename, input);
         m_sample = Sample::DoNotUse;
@@ -159,7 +170,7 @@ void Solver::read_parameterfile(const char * filename)
 
     // CFL
     m_param->cfl.sound = input.get<real>("cflSound", 0.3);
-    m_param->cfl.force = input.get<real>("cflForce", 0.25);
+    m_param->cfl.force = input.get<real>("cflForce", 0.125);
 
     // Artificial Viscosity
     m_param->av.alpha = input.get<real>("avAlpha", 1.0);
@@ -228,6 +239,13 @@ void Solver::read_parameterfile(const char * filename)
             }
         }
     }
+
+    // gravity
+    m_param->gravity.is_valid = input.get<bool>("useGravity", false);
+    if(m_param->gravity.is_valid) {
+        m_param->gravity.constant = input.get<real>("G", 1.0);
+        m_param->gravity.theta = input.get<real>("theta", 0.5);
+    }
 }
 
 void Solver::run()
@@ -256,7 +274,7 @@ void Solver::run()
         m_sim->update_time();
         t = m_sim->get_time();
         
-        // 1ïbÇ≤Ç∆Ç…âÊñ èoóÕÇ∑ÇÈ
+        // 1ÔøΩbÔøΩÔøΩÔøΩ∆Ç…âÔøΩ èoÔøΩÕÇÔøΩÔøΩÔøΩ
         const auto t_cout_f = std::chrono::system_clock::now();
         const real t_cout_s = std::chrono::duration_cast<std::chrono::seconds>(t_cout_f - t_cout_i).count();
         if(t_cout_s >= 1.0) {
@@ -291,6 +309,7 @@ void Solver::initialize()
     m_timestep.initialize(m_param);
     m_pre.initialize(m_param);
     m_fforce.initialize(m_param);
+    m_gforce.initialize(m_param);
 
     auto & p = m_sim->get_particles();
     const int num = m_sim->get_particle_num();
@@ -306,13 +325,16 @@ void Solver::initialize()
         p[i].sound = std::sqrt(c_sound * p[i].ene);
     }
 
+#ifndef EXHAUSTIVE_SEARCH
     auto tree = m_sim->get_tree();
     tree->resize(num);
     tree->make(p, num);
+#endif
 
     m_pre.initial_smoothing(m_sim);
     m_pre.calculation(m_sim);
     m_fforce.calculation(m_sim);
+    m_gforce.calculation(m_sim);
 }
 
 void Solver::integrate()
@@ -320,9 +342,12 @@ void Solver::integrate()
     m_timestep.calculation(m_sim);
 
     predict();
+#ifndef EXHAUSTIVE_SEARCH
     m_sim->make_tree();
+#endif
     m_pre.calculation(m_sim);
     m_fforce.calculation(m_sim);
+    m_gforce.calculation(m_sim);
     correct();
 }
 
@@ -379,6 +404,7 @@ void Solver::make_initial_condition()
         MAKE_SAMPLE(Sample::GreshoChanVortex, gresho_chan_vortex);
         MAKE_SAMPLE(Sample::HydroStatic, hydrostatic);
         MAKE_SAMPLE(Sample::KHI, khi);
+        MAKE_SAMPLE(Sample::Evrard, evrard);
         case Sample::DoNotUse:
             // make distribution
             break;

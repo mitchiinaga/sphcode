@@ -1,0 +1,15 @@
+{
+    "outputDirectory" : "sample/evrard/results",
+    "endTime" : 3.0,
+    "avAlpha" : 1.0,
+    "neighborNumber" : 32,
+    "useBalsaraSwitch" : true,
+    "useTimeDependentAV" : true,
+    "useArtificialConductivity" : false,
+    "leafParticleNumber" : 16,
+    "gamma" : 1.66666666666666666666666666666666667,
+    "kernel" : "cubic_spline",
+    "N" : 20,
+    "periodic" : false,
+    "useGravity" : true
+}
