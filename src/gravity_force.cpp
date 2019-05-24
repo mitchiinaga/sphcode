@@ -65,7 +65,7 @@ void GravityForce::calculation(std::shared_ptr<Simulation> sim)
         auto & p_i = particles[i];
         
 #ifdef EXHAUSTIVE_SEARCH
-        real phi = m_constant * p_i.mass / p_i.sml * 2.8;
+        real phi = 0.0;
         vec_t force(0.0);
         const vec_t & r_i = p_i.pos;
 
@@ -80,7 +80,6 @@ void GravityForce::calculation(std::shared_ptr<Simulation> sim)
         p_i.acc += force;
         p_i.phi = phi;
 #else
-        p_i.phi = 0.0;
         tree->tree_force(p_i);
 #endif
     }

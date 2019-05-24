@@ -56,6 +56,7 @@ class BHTree
         void assign(SPHParticle * particle, BHNode * & nodes, int & remaind);
         real set_kernel();
         void neighbor_search(const SPHParticle & p_i, std::vector<int> & neighbor_list, int & n_neighbor, const bool is_ij, const Periodic * periodic);
+        void calc_force(SPHParticle & p_i, const real theta2, const real g_constant, const Periodic * periodic);
     };
 
     int  m_max_level;
@@ -67,6 +68,10 @@ class BHTree
     BHNode m_root;
     std::shared_ptr<BHNode> m_nodes;
     int m_node_size;
+
+    real m_g_constant;
+    real m_theta;
+    real m_theta2;
 public:
     void initialize(std::shared_ptr<SPHParameters> param);
     void resize(const int particle_num, const int tree_size = 5);

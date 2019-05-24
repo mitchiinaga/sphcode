@@ -1,4 +1,4 @@
-#include <cassert>
+﻿#include <cassert>
 
 #include <iostream>
 #include <chrono>
@@ -274,7 +274,7 @@ void Solver::run()
         m_sim->update_time();
         t = m_sim->get_time();
         
-        // 1�b���Ƃɉ�ʏo�͂���
+        // 1秒毎に画面出力
         const auto t_cout_f = std::chrono::system_clock::now();
         const real t_cout_s = std::chrono::duration_cast<std::chrono::seconds>(t_cout_f - t_cout_i).count();
         if(t_cout_s >= 1.0) {

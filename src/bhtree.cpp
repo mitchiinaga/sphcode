@@ -31,6 +31,12 @@ void BHTree::initialize(std::shared_ptr<SPHParameters> param)
     }
     m_periodic = std::make_shared<Periodic>();
     m_periodic->initialize(param);
+
+    if(param->gravity.is_valid) {
+        m_g_constant = param->gravity.constant;
+        m_theta = param->gravity.theta;
+        m_theta2 = m_theta * m_theta;
+    }
 }
 
 void BHTree::resize(const int particle_num, const int tree_size)
@@ -117,6 +123,12 @@ int BHTree::neighbor_search(const SPHParticle & p_i, std::vector<int> & neighbor
         return abs2(r_ia) < abs2(r_ib);
     });
     return n_neighbor;
+}
+
+void BHTree::tree_force(SPHParticle & p_i)
+{
+    p_i.phi = 0.0;
+    m_root.calc_force(p_i, m_theta2, m_g_constant, m_periodic.get());
 }
 
 // --------------------------------------------------------------------------------------------------------------- //
@@ -254,6 +266,69 @@ void BHTree::BHNode::neighbor_search(const SPHParticle & p_i, std::vector<int> &
                 }
             }
         }
+    }
+}
+
+ // Hernquist & Katz (1989)
+inline real f(const real r, const real h)
+{
+    const real e = h * 0.5;
+    const real u = r / e;
+    
+    if(u < 1.0) {
+        return (-0.5 * u * u * (1.0 / 3.0 - 3.0 / 20 * u * u + u * u * u / 20) + 1.4) / e;
+    } else if(u < 2.0) {
+        return -1.0 / (15 * r) + (-u * u * (4.0 / 3.0 - u + 0.3 * u * u - u * u * u / 30) + 1.6) / e;
+    } else {
+        return 1 / r;
+    }
+}
+
+inline real g(const real r, const real h)
+{
+    const real e = h * 0.5;
+    const real u = r / e;
+    
+    if(u < 1.0) {
+        return (4.0 / 3.0 - 1.2 * u * u + 0.5 * u * u * u) / (e * e * e);
+    } else if(u < 2.0) {
+        return (-1.0 / 15 + 8.0 / 3 * u * u * u - 3 * u * u * u * u + 1.2 * u * u * u * u * u - u * u * u * u * u * u / 6.0) / (r * r * r);
+    } else {
+        return 1 / (r * r * r);
+    }
+}
+
+void BHTree::BHNode::calc_force(SPHParticle & p_i, const real theta2, const real g_constant, const Periodic * periodic)
+{
+    const vec_t & r_i = p_i.pos;
+    const real l2 = edge * edge;
+    const vec_t d = periodic->calc_r_ij(r_i, m_center);
+    const real d2 = abs2(d);
+
+    if(l2 > theta2 * d2) {
+        if(is_leaf) {
+            const real h = std::max(p_i.sml, kernel_size);
+            const real h2 = h * h;
+            auto * p = first;
+            while(p) {
+                const vec_t & r_j = p->pos;
+                const vec_t r_ij = periodic->calc_r_ij(r_i, r_j);
+                const real r = std::sqrt(d2);
+                p_i.phi -= g_constant * p->mass * (f(r, p_i.sml) + f(r, p->sml)) * 0.5;
+                p_i.acc -= r_ij * (g_constant * p->mass * (g(r, p_i.sml) + g(r, p->sml)) * 0.5);
+                p = p->next;
+            }
+        } else {
+            for(int i = 0; i < NCHILD; ++i) {
+                if(childs[i]) {
+                    childs[i]->calc_force(p_i, theta2, g_constant, periodic);
+                }
+            }
+        }
+    } else {
+        const real r_inv = 1.0 / std::sqrt(d2);
+        p_i.phi -= g_constant * mass * r_inv;
+        p_i.acc -= d * (g_constant * mass * pow3(r_inv));
     }
 }
 
