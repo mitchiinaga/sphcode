@@ -5,7 +5,7 @@
     "neighborNumber" : 32,
     "useBalsaraSwitch" : true,
     "useTimeDependentAV" : true,
-    "useArtificialConductivity" : false,
+    "useArtificialConductivity" : true,
     "leafParticleNumber" : 16,
     "gamma" : 1.66666666666666666666666666666666667,
     "kernel" : "cubic_spline",

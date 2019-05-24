@@ -19,6 +19,7 @@ void FluidForce::initialize(std::shared_ptr<SPHParameters> param)
     m_use_ac = param->ac.is_valid;
     if(m_use_ac) {
         m_alpha_ac = param->ac.alpha;
+        m_use_gravity = param->gravity.is_valid;
     }
 }
 
@@ -106,8 +107,11 @@ real FluidForce::artificial_viscosity(const SPHParticle & p_i, const SPHParticle
 
 real FluidForce::artificial_conductivity(const SPHParticle & p_i, const SPHParticle & p_j, const vec_t & r_ij, const vec_t & dw_ij)
 {
-    // Price (2008)
-    const real v_sig = std::sqrt(2.0 * std::abs(p_i.pres - p_j.pres) / (p_i.dens + p_j.dens));
+    // Wadsley et al. (2008) or Price (2008)
+    const real v_sig = m_use_gravity ?
+        std::abs(inner_product(p_i.vel - p_j.vel, r_ij) / std::abs(r_ij)) :
+        std::sqrt(2.0 * std::abs(p_i.pres - p_j.pres) / (p_i.dens + p_j.dens));
+
     return m_alpha_ac * p_j.mass * v_sig * (p_i.ene - p_j.ene) * inner_product(dw_ij, r_ij) / std::abs(r_ij);
 }
 
