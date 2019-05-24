@@ -6,10 +6,10 @@
     "useBalsaraSwitch" : true,
     "useTimeDependentAV" : true,
     "useArtificialConductivity" : true,
-    "leafParticleNumber" : 16,
+    "leafParticleNumber" : 32,
     "gamma" : 1.66666666666666666666666666666666667,
     "kernel" : "cubic_spline",
-    "N" : 20,
+    "N" : 30,
     "periodic" : false,
     "useGravity" : true
 }
