@@ -5,11 +5,12 @@
     "neighborNumber" : 32,
     "useBalsaraSwitch" : true,
     "useTimeDependentAV" : true,
-    "useArtificialConductivity" : true,
+    "useArtificialConductivity" : false,
     "leafParticleNumber" : 32,
     "gamma" : 1.66666666666666666666666666666666667,
-    "kernel" : "cubic_spline",
+    "kernel" : "wendland",
     "N" : 30,
     "periodic" : false,
-    "useGravity" : true
+    "useGravity" : true,
+    "SPHType" : "ssph"
 }
