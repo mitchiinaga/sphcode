@@ -156,8 +156,8 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
             }
             div_v /= p_i.dens;
             const real tau_inv = m_epsilon * p_i.sound / p_i.sml;
-            const real dalpha = (-(p_i.alpha - m_alpha_min) * tau_inv + std::max(-div_v, (real)0.0) * (m_alpha_max - p_i.alpha)) * dt;
-            p_i.alpha += dalpha;
+            const real s_i = std::max(-div_v, (real)0.0);
+            p_i.alpha = (p_i.alpha + dt * tau_inv * m_alpha_min + s_i * dt * m_alpha_max) / (1.0 + dt * tau_inv + s_i * dt);
         }
     }
 
