@@ -274,6 +274,11 @@ real PreInteraction::newton_raphson(
         }
     }
 
+#pragma omp critical
+    {
+        WRITE_LOG << "Particle id " << p_i.id << " is not convergence";
+    }
+
     return p_i.sml / m_kernel_ratio;
 }
 
