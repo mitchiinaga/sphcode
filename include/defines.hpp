@@ -1,8 +1,6 @@
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <cstdlib>
+#include <cmath>
 
 #define DIM 1
 typedef double real;
