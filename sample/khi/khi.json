@@ -1,17 +1,18 @@
 {
     "outputDirectory" : "sample/khi/results",
-    "endTime" : 4.0,
+    "endTime" : 3.0,
     "outputTime" : 0.1,
     "avAlpha" : 1.0,
     "neighborNumber" : 32,
     "useBalsaraSwitch" : true,
     "useTimeDependentAV" : true,
-    "useArtificialConductivity" : true,
+    "useArtificialConductivity" : false,
     "leafParticleNumber" : 16,
     "gamma" : 1.66666666666666666666666666666666667,
     "kernel" : "wendland",
     "N" : 256,
     "periodic" : true,
     "rangeMax" : [1.0, 1.0],
-    "rangeMin" : [0.0, 0.0]
+    "rangeMin" : [0.0, 0.0],
+    "SPHType" : "ssph"
 }
