@@ -8,10 +8,6 @@
 #include <boost/any.hpp>
 
 #include "defines.hpp"
-#include "timestep.hpp"
-#include "pre_interaction.hpp"
-#include "fluid_force.hpp"
-#include "gravity_force.hpp"
 
 namespace sph
 {
@@ -19,6 +15,8 @@ namespace sph
 struct SPHParameters;
 class Simulation;
 class Output;
+
+class Module;
 
 enum struct Sample {
     ShockTube,
@@ -31,16 +29,16 @@ enum struct Sample {
 };
 
 class Solver {
-    std::shared_ptr<SPHParameters> m_param;
-    std::shared_ptr<Output>        m_output;
-    std::string                    m_output_dir;
-    std::shared_ptr<Simulation>    m_sim;
+    std::shared_ptr<SPHParameters>  m_param;
+    std::shared_ptr<Output>         m_output;
+    std::string                     m_output_dir;
+    std::shared_ptr<Simulation>     m_sim;
 
     // modules
-    TimeStep       m_timestep;
-    PreInteraction m_pre;
-    FluidForce     m_fforce;
-    GravityForce   m_gforce;
+    std::shared_ptr<Module> m_timestep;
+    std::shared_ptr<Module> m_pre;
+    std::shared_ptr<Module> m_fforce;
+    std::shared_ptr<Module> m_gforce;
 
     void read_parameterfile(const char * filename);
     void make_initial_condition();

@@ -13,6 +13,14 @@
 #include "periodic.hpp"
 #include "bhtree.hpp"
 
+// modules
+#include "timestep.hpp"
+#include "pre_interaction.hpp"
+#include "fluid_force.hpp"
+#include "gravity_force.hpp"
+#include "disph/d_pre_interaction.hpp"
+#include "disph/d_fluid_force.hpp"
+
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -55,6 +63,15 @@ Solver::Solver(int argc, char * argv[])
     WRITE_LOG << "* end time           = " << m_param->time.end;
     WRITE_LOG << "* output time        = " << m_param->time.output;
     WRITE_LOG << "* enerty output time = " << m_param->time.energy;
+
+    switch(m_param->type) {
+    case SPHType::SSPH:
+        WRITE_LOG << "SPH type: Standard SPH";
+        break;
+    case SPHType::DISPH:
+        WRITE_LOG << "SPH type: Density Independent SPH";
+        break;
+    }
 
     WRITE_LOG << "CFL condition";
     WRITE_LOG << "* sound speed = " << m_param->cfl.sound;
@@ -174,6 +191,16 @@ void Solver::read_parameterfile(const char * filename)
     }
     m_param->time.output = input.get<real>("outputTime", (m_param->time.end - m_param->time.start) / 100);
     m_param->time.energy = input.get<real>("energyTime", m_param->time.output);
+
+    // type
+    std::string sph_type = input.get<std::string>("SPHType", "ssph");
+    if(sph_type == "ssph") {
+        m_param->type = SPHType::SSPH;
+    } else if(sph_type == "disph") {
+        m_param->type = SPHType::DISPH;
+    } else {
+        THROW_ERROR("Unknown SPH type");
+    }
 
     // CFL
     m_param->cfl.sound = input.get<real>("cflSound", 0.3);
@@ -313,10 +340,20 @@ void Solver::initialize()
 
     make_initial_condition();
 
-    m_timestep.initialize(m_param);
-    m_pre.initialize(m_param);
-    m_fforce.initialize(m_param);
-    m_gforce.initialize(m_param);
+    m_timestep = std::make_shared<TimeStep>();
+    if(m_param->type == SPHType::SSPH) {
+        m_pre = std::make_shared<PreInteraction>();
+        m_fforce = std::make_shared<FluidForce>();
+    } else if(m_param->type == SPHType::DISPH) {
+        m_pre = std::make_shared<disph::PreInteraction>();
+        m_fforce = std::make_shared<disph::FluidForce>();
+    }
+    m_gforce = std::make_shared<GravityForce>();
+
+    m_timestep->initialize(m_param);
+    m_pre->initialize(m_param);
+    m_fforce->initialize(m_param);
+    m_gforce->initialize(m_param);
 
     auto & p = m_sim->get_particles();
     const int num = m_sim->get_particle_num();
@@ -338,23 +375,22 @@ void Solver::initialize()
     tree->make(p, num);
 #endif
 
-    m_pre.initial_smoothing(m_sim);
-    m_pre.calculation(m_sim);
-    m_fforce.calculation(m_sim);
-    m_gforce.calculation(m_sim);
+    m_pre->calculation(m_sim);
+    m_fforce->calculation(m_sim);
+    m_gforce->calculation(m_sim);
 }
 
 void Solver::integrate()
 {
-    m_timestep.calculation(m_sim);
+    m_timestep->calculation(m_sim);
 
     predict();
 #ifndef EXHAUSTIVE_SEARCH
     m_sim->make_tree();
 #endif
-    m_pre.calculation(m_sim);
-    m_fforce.calculation(m_sim);
-    m_gforce.calculation(m_sim);
+    m_pre->calculation(m_sim);
+    m_fforce->calculation(m_sim);
+    m_gforce->calculation(m_sim);
     correct();
 }
 

@@ -4,6 +4,12 @@
 
 namespace sph
 {
+
+enum struct SPHType {
+    SSPH,
+    DISPH,
+};
+
 enum struct KernelType {
     CUBIC_SPLINE,
     WENDLAND,
@@ -18,6 +24,8 @@ struct SPHParameters {
         real output;
         real energy;
     } time;
+
+    SPHType type;
 
     struct CFL {
         real sound;

@@ -19,6 +19,12 @@
     <Filter Include="Source Files\sample">
       <UniqueIdentifier>{3f5c3c31-1757-4dce-8305-b86596934f62}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\disph">
+      <UniqueIdentifier>{30858a98-da3e-4047-86ff-f5859ddce2c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\disph">
+      <UniqueIdentifier>{fd625825-0f71-4891-a1d0-6cda4470a850}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -71,6 +77,12 @@
     </ClCompile>
     <ClCompile Include="src\sample\shock_tube.cpp">
       <Filter>Source Files\sample</Filter>
+    </ClCompile>
+    <ClCompile Include="src\disph\d_fluid_force.cpp">
+      <Filter>Source Files\disph</Filter>
+    </ClCompile>
+    <ClCompile Include="src\disph\d_pre_interaction.cpp">
+      <Filter>Source Files\disph</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +148,12 @@
     </ClInclude>
     <ClInclude Include="include\gravity_force.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\disph\d_fluid_force.hpp">
+      <Filter>Header Files\disph</Filter>
+    </ClInclude>
+    <ClInclude Include="include\disph\d_pre_interaction.hpp">
+      <Filter>Header Files\disph</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

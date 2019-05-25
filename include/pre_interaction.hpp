@@ -11,6 +11,7 @@ class Periodic;
 class KernelFunction;
 
 class PreInteraction : public Module {
+protected:
     bool m_use_balsara_switch;
     bool m_use_time_dependent_av;
     real m_alpha_max;
@@ -20,8 +21,9 @@ class PreInteraction : public Module {
     int  m_neighbor_number;
     real m_kernel_ratio;
     bool m_iteration;
+    bool m_first;
 
-    real newton_raphson(
+    virtual real newton_raphson(
         const SPHParticle & p_i,
         const std::vector<SPHParticle> & particles,
         const std::vector<int> & neighbor_list,
@@ -29,10 +31,10 @@ class PreInteraction : public Module {
         const Periodic * periodic,
         const KernelFunction * kernel
     );
+    void initial_smoothing(std::shared_ptr<Simulation> sim);
 
 public:
     void initialize(std::shared_ptr<SPHParameters> param) override;
-    void calculation(std::shared_ptr<Simulation> sim) override;
-    void initial_smoothing(std::shared_ptr<Simulation> sim);
+    virtual void calculation(std::shared_ptr<Simulation> sim) override;
 };
 }

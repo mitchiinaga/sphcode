@@ -23,11 +23,11 @@ inline void output(const SPHParticle & p, std::ofstream &out)
     OUTPUT_SCALAR(dens);
     OUTPUT_SCALAR(pres);
     OUTPUT_SCALAR(ene);
-    OUTPUT_SCALAR(sound);
     OUTPUT_SCALAR(sml);
     OUTPUT_SCALAR(id);
     OUTPUT_SCALAR(neighbor);
     OUTPUT_SCALAR(alpha);
+    OUTPUT_SCALAR(gradh);
     out << std::endl;
 }
 

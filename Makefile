@@ -44,7 +44,7 @@ directories:
 
 # 中間生成物のためのディレクトリを削除
 clean:
-	@$(RM) -f $(BUILDDIR)/* $(TARGET)
+	@$(RM) -rf $(BUILDDIR)/* $(TARGET)
 
 # 自動抽出した.dファイルを読み込む
 -include $(dependencies)
