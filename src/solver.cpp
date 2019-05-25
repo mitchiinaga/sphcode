@@ -370,7 +370,7 @@ void Solver::initialize()
     m_gforce = std::make_shared<GravityForce>();
 
     // GSPH
-    if(m_param->type == SPHType::GSPH && m_param->gsph.is_2nd_order) {
+    if(m_param->type == SPHType::GSPH) {
         std::vector<std::string> names;
         names.push_back("density");
         names.push_back("pressure");
@@ -381,6 +381,7 @@ void Solver::initialize()
         names.push_back("velocity_1");
         names.push_back("velocity_2");
 #endif
+        m_sim->add_vector_array(names);
     }
 
     m_timestep->initialize(m_param);

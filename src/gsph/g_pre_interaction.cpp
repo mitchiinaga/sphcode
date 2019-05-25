@@ -1,4 +1,4 @@
-#include <algorithm>
+﻿#include <algorithm>
 
 #include "parameters.hpp"
 #include "gsph/g_pre_interaction.hpp"
@@ -39,6 +39,19 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
     auto * tree = sim->get_tree().get();
 
     omp_real h_per_v_sig(std::numeric_limits<real>::max());
+
+    // for MUSCL
+    auto & grad_d = sim->get_vector_array("density");
+    auto & grad_p = sim->get_vector_array("pressure");
+    vec_t * grad_v[DIM] = {
+        sim->get_vector_array("velocity_0").data(),
+#if DIM == 2
+        sim->get_vector_array("velocity_1").data(),
+#elif DIM == 3
+        sim->get_vector_array("velocity_1").data(),
+        sim->get_vector_array("velocity_2").data(),
+#endif
+    };
 
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {
@@ -95,6 +108,32 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
         const real h_per_v_sig_i = p_i.sml / v_sig_max;
         if(h_per_v_sig.get() > h_per_v_sig_i) {
             h_per_v_sig.get() = h_per_v_sig_i;
+        }
+
+        // MUSCL法のための勾配計算
+        if(!m_is_2nd_order) {
+            continue;
+        }
+
+        vec_t dd, du; // dP = (gamma - 1) * (rho * du + drho * u)
+        vec_t dv[DIM];
+        for(int n = 0; n < n_neighbor; ++n) {
+            int const j = neighbor_list[n];
+            auto & p_j = particles[j];
+            const vec_t r_ij = periodic->calc_r_ij(pos_i, p_j.pos);
+            const real r = std::abs(r_ij);
+            const vec_t dw_ij = kernel->dw(r_ij, r, p_i.sml);
+            dd += dw_ij * p_j.mass;
+            du += dw_ij * (p_j.mass * (p_j.ene - p_i.ene));
+            for(int k = 0; k < DIM; ++k) {
+                dv[k] += dw_ij * (p_j.mass * (p_j.vel[k] - p_i.vel[k]));
+            }
+        }
+        grad_d[i] = dd;
+        grad_p[i] = (dd * p_i.ene + du) * (m_gamma - 1.0);
+        const real rho_inv = 1.0 / p_i.dens;
+        for(int k = 0; k < DIM; ++k) {
+            grad_v[k][i] = dv[k] * rho_inv;
         }
     }
 
