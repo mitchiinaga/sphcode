@@ -124,6 +124,8 @@
     <ClCompile Include="src\exhaustive_search.cpp" />
     <ClCompile Include="src\fluid_force.cpp" />
     <ClCompile Include="src\gravity_force.cpp" />
+    <ClCompile Include="src\gsph\g_fluid_force.cpp" />
+    <ClCompile Include="src\gsph\g_pre_interaction.cpp" />
     <ClCompile Include="src\logger.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\output.cpp" />
@@ -145,6 +147,8 @@
     <ClInclude Include="include\disph\d_pre_interaction.hpp" />
     <ClInclude Include="include\exhaustive_search.hpp" />
     <ClInclude Include="include\gravity_force.hpp" />
+    <ClInclude Include="include\gsph\g_fluid_force.hpp" />
+    <ClInclude Include="include\gsph\g_pre_interaction.hpp" />
     <ClInclude Include="include\periodic.hpp" />
     <ClInclude Include="include\exception.hpp" />
     <ClInclude Include="include\fluid_force.hpp" />

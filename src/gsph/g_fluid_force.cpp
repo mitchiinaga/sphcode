@@ -19,6 +19,9 @@ void FluidForce::initialize(std::shared_ptr<SPHParameters> param)
 {
     sph::FluidForce::initialize(param);
     m_is_2nd_order = param->gsph.is_2nd_order;
+    m_gamma = param->physics.gamma;
+
+    hll_solver();
 }
 
 void FluidForce::calculation(std::shared_ptr<Simulation> sim)
@@ -44,9 +47,8 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
         // fluid force
         const vec_t & r_i = p_i.pos;
         const vec_t & v_i = p_i.vel;
-        const real p_per_rho2_i = p_i.pres / sqr(p_i.dens);
         const real h_i = p_i.sml;
-        const real gradh_i = p_i.gradh;
+        const real rho2_inv_i = 1.0 / sqr(p_i.dens);
 
         vec_t acc(0.0);
         real dene = 0.0;
@@ -61,26 +63,71 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
                 continue;
             }
 
+            const vec_t e_ij = r_ij / r;
+            const real ve_i = inner_product(v_i, e_ij);
+            const real ve_j = inner_product(p_j.vel, e_ij);
+
+            const real right[4] = {
+                ve_i,
+                p_i.dens,
+                p_i.pres,
+                p_i.sound,
+            };
+            const real left[4] = {
+                ve_j,
+                p_j.dens,
+                p_j.pres,
+                p_j.sound,
+            };
+            real vstar, pstar;
+            m_solver(left, right, pstar, vstar);
+
             const vec_t dw_i = kernel->dw(r_ij, r, h_i);
             const vec_t dw_j = kernel->dw(r_ij, r, p_j.sml);
-            const vec_t dw_ij = (dw_i + dw_j) * 0.5;
-            const vec_t v_ij = v_i - p_j.vel;
+            const vec_t v_ij = e_ij * vstar;
+            const real rho2_inv_j = 1.0 / sqr(p_j.dens);
+            const vec_t f = dw_i * (p_j.mass * pstar * rho2_inv_i) + dw_j * (p_j.mass * pstar * rho2_inv_j);
 
-            const real pi_ij = artificial_viscosity(p_i, p_j, r_ij);
-            const real dene_ac = m_use_ac ? artificial_conductivity(p_i, p_j, r_ij, dw_ij) : 0.0;
-
-#if 0
-            acc -= dw_ij * (p_j.mass * (p_per_rho2_i + p_j.pres / sqr(p_j.dens) + pi_ij));
-            dene += p_j.mass * (p_per_rho2_i + 0.5 * pi_ij) * inner_product(v_ij, dw_ij);
-#else
-            acc -= dw_i * (p_j.mass * (p_per_rho2_i * gradh_i + 0.5 * pi_ij)) + dw_j * (p_j.mass * (p_j.pres / sqr(p_j.dens) * p_j.gradh + 0.5 * pi_ij));
-            dene += p_j.mass * p_per_rho2_i * gradh_i * inner_product(v_ij, dw_i) + 0.5 * p_j.mass * pi_ij * inner_product(v_ij, dw_ij) + dene_ac;
-#endif
+            acc -= f;
+            dene -= inner_product(f, v_ij - v_i);
         }
 
         p_i.acc = acc;
         p_i.dene = dene;
     }
+}
+
+void FluidForce::hll_solver()
+{
+    m_solver = [&](const real left[], const real right[], real & pstar, real & vstar) {
+        const real u_l   = left[0];
+        const real rho_l = left[1];
+        const real p_l   = left[2];
+        const real c_l   = left[3];
+
+        const real u_r   = right[0];
+        const real rho_r = right[1];
+        const real p_r   = right[2];
+        const real c_r   = right[3];
+
+        const real roe_l = std::sqrt(rho_l);
+        const real roe_r = std::sqrt(rho_r);
+        const real roe_inv = 1.0 / (roe_l + roe_r);
+
+        const real u_t = (roe_l * u_l + roe_r * u_r) * roe_inv;
+        const real c_t = (roe_l * c_l + roe_r * c_r) * roe_inv;
+        const real s_l = std::min(u_l - c_l, u_t - c_t);
+        const real s_r = std::max(u_r + c_r, u_t + c_t);
+
+        const real c1 = rho_l * (s_l - u_l);
+        const real c2 = rho_r * (s_r - u_r);
+        const real c3 = 1.0 / (c1 - c2);
+        const real c4 = p_l - u_l * c1;
+        const real c5 = p_r - u_r * c2;
+        
+        vstar = (c5 - c4) * c3;
+        pstar = (c1 * c5 - c2 * c4) * c3;
+    };
 }
 
 }

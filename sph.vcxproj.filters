@@ -25,6 +25,12 @@
     <Filter Include="Source Files\disph">
       <UniqueIdentifier>{fd625825-0f71-4891-a1d0-6cda4470a850}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\gsph">
+      <UniqueIdentifier>{747d701f-f9b3-45c7-bfe1-d8f8385217a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gsph">
+      <UniqueIdentifier>{3bb55d42-fa86-425e-9417-b6d795e7178f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -83,6 +89,12 @@
     </ClCompile>
     <ClCompile Include="src\disph\d_pre_interaction.cpp">
       <Filter>Source Files\disph</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gsph\g_fluid_force.cpp">
+      <Filter>Source Files\gsph</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gsph\g_pre_interaction.cpp">
+      <Filter>Source Files\gsph</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +166,12 @@
     </ClInclude>
     <ClInclude Include="include\disph\d_pre_interaction.hpp">
       <Filter>Header Files\disph</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gsph\g_fluid_force.hpp">
+      <Filter>Header Files\gsph</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gsph\g_pre_interaction.hpp">
+      <Filter>Header Files\gsph</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

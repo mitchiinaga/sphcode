@@ -20,6 +20,8 @@
 #include "gravity_force.hpp"
 #include "disph/d_pre_interaction.hpp"
 #include "disph/d_fluid_force.hpp"
+#include "gsph/g_pre_interaction.hpp"
+#include "gsph/g_fluid_force.hpp"
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -361,8 +363,25 @@ void Solver::initialize()
     } else if(m_param->type == SPHType::DISPH) {
         m_pre = std::make_shared<disph::PreInteraction>();
         m_fforce = std::make_shared<disph::FluidForce>();
+    } else if(m_param->type == SPHType::GSPH) {
+        m_pre = std::make_shared<gsph::PreInteraction>();
+        m_fforce = std::make_shared<gsph::FluidForce>();
     }
     m_gforce = std::make_shared<GravityForce>();
+
+    // GSPH
+    if(m_param->type == SPHType::GSPH && m_param->gsph.is_2nd_order) {
+        std::vector<std::string> names;
+        names.push_back("density");
+        names.push_back("pressure");
+        names.push_back("velocity_0");
+#if DIM == 2
+        names.push_back("velocity_1");
+#elif DIM == 3
+        names.push_back("velocity_1");
+        names.push_back("velocity_2");
+#endif
+    }
 
     m_timestep->initialize(m_param);
     m_pre->initialize(m_param);
