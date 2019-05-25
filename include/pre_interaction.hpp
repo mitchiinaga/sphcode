@@ -34,7 +34,7 @@ protected:
     void initial_smoothing(std::shared_ptr<Simulation> sim);
 
 public:
-    void initialize(std::shared_ptr<SPHParameters> param) override;
+    virtual void initialize(std::shared_ptr<SPHParameters> param) override;
     virtual void calculation(std::shared_ptr<Simulation> sim) override;
 };
 }

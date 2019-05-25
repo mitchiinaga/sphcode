@@ -38,4 +38,40 @@ void Simulation::make_tree()
     m_tree->make(m_particles, m_particle_num);
 }
 
+void Simulation::add_scalar_array(const std::vector<std::string> & names)
+{
+    const int num = m_particle_num;
+    for(const auto & name : names) {
+        additional_scalar_array[name].resize(num);
+    }
+}
+
+void Simulation::add_vector_array(const std::vector<std::string> & names)
+{
+    const int num = m_particle_num;
+    for(const auto & name : names) {
+        additional_vector_array[name].resize(num);
+    }
+}
+
+std::vector<real> & Simulation::get_scalar_array(const std::string & name)
+{
+    auto it = additional_scalar_array.find(name);
+    if(it != additional_scalar_array.end()) {
+        return it->second;
+    } else {
+        THROW_ERROR("additional_scalar_array does not have ", name);
+    }
+}
+
+std::vector<vec_t> & Simulation::get_vector_array(const std::string & name)
+{
+    auto it = additional_vector_array.find(name);
+    if(it != additional_vector_array.end()) {
+        return it->second;
+    } else {
+        THROW_ERROR("additional_vector_array does not have ", name);
+    }
+}
+
 }

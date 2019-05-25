@@ -8,6 +8,7 @@ namespace sph
 enum struct SPHType {
     SSPH,
     DISPH,
+    GSPH,
 };
 
 enum struct KernelType {
@@ -71,6 +72,10 @@ struct SPHParameters {
         real constant;
         real theta;
     } gravity;
+
+    struct GSPH {
+        bool is_2nd_order;
+    } gsph;
 };
 
 }

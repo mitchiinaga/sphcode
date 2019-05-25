@@ -71,6 +71,13 @@ Solver::Solver(int argc, char * argv[])
     case SPHType::DISPH:
         WRITE_LOG << "SPH type: Density Independent SPH";
         break;
+    case SPHType::GSPH:
+        if(m_param->gsph.is_2nd_order) {
+            WRITE_LOG << "SPH type: Godunov SPH (2nd order)";
+        } else {
+            WRITE_LOG << "SPH type: Godunov SPH (1st order)";
+        }
+        break;
     }
 
     WRITE_LOG << "CFL condition";
@@ -198,6 +205,8 @@ void Solver::read_parameterfile(const char * filename)
         m_param->type = SPHType::SSPH;
     } else if(sph_type == "disph") {
         m_param->type = SPHType::DISPH;
+    } else if(sph_type == "gsph") {
+        m_param->type = SPHType::GSPH;
     } else {
         THROW_ERROR("Unknown SPH type");
     }
@@ -279,6 +288,11 @@ void Solver::read_parameterfile(const char * filename)
     if(m_param->gravity.is_valid) {
         m_param->gravity.constant = input.get<real>("G", 1.0);
         m_param->gravity.theta = input.get<real>("theta", 0.5);
+    }
+
+    // GSPH
+    if(m_param->type == SPHType::GSPH) {
+        m_param->gsph.is_2nd_order = input.get<bool>("use2ndOrderGSPH", true);
     }
 }
 
