@@ -35,7 +35,6 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
     auto * periodic = sim->get_periodic().get();
     const int num = sim->get_particle_num();
     auto * kernel = sim->get_kernel().get();
-    const real dt = sim->get_dt();
     auto * tree = sim->get_tree().get();
 
     omp_real h_per_v_sig(std::numeric_limits<real>::max());
