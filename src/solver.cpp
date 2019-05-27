@@ -95,7 +95,7 @@ Solver::Solver(int argc, char * argv[])
         WRITE_LOG << "* use time dependent AV";
         WRITE_LOG << "* alpha max = " << m_param->av.alpha_max;
         WRITE_LOG << "* alpha min = " << m_param->av.alpha_min;
-        WRITE_LOG << "* epsilon = " << m_param->av.epsilon;
+        WRITE_LOG << "* epsilon   = " << m_param->av.epsilon;
     }
 
     if(m_param->ac.is_valid) {
@@ -109,7 +109,7 @@ Solver::Solver(int argc, char * argv[])
 
     WRITE_LOG << "Physics";
     WRITE_LOG << "* Neighbor number = " << m_param->physics.neighbor_number;
-    WRITE_LOG << "* gamma           =" << m_param->physics.gamma;
+    WRITE_LOG << "* gamma           = " << m_param->physics.gamma;
 
     WRITE_LOG << "Kernel";
     if(m_param->kernel == KernelType::CUBIC_SPLINE) {
@@ -121,7 +121,7 @@ Solver::Solver(int argc, char * argv[])
     }
 
     if(m_param->iterative_sml) {
-        WRITE_LOG << "iterative calculation for smoothing length is valid.";
+        WRITE_LOG << "Iterative calculation for smoothing length is valid.";
     }
 
     if(m_param->periodic.is_valid) {
@@ -484,7 +484,9 @@ void Solver::make_initial_condition()
         MAKE_SAMPLE(Sample::KHI, khi);
         MAKE_SAMPLE(Sample::Evrard, evrard);
         case Sample::DoNotUse:
-            // make distribution
+
+            // サンプルを使わない場合はここを実装
+            
             break;
         default:
             THROW_ERROR("unknown sample type.");

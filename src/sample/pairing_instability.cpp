@@ -9,6 +9,8 @@
 namespace sph
 {
 
+// Pairing instability test
+
 void Solver::make_pairing_instability()
 {
 #if DIM != 2

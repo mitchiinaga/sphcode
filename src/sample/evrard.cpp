@@ -9,6 +9,7 @@
 namespace sph
 {
 
+// Evrard collapse (Evrard 1988)
 void Solver::make_evrard()
 {
 #if DIM != 3

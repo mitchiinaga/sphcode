@@ -21,6 +21,8 @@ void FluidForce::initialize(std::shared_ptr<SPHParameters> param)
     m_gamma = param->physics.gamma;
 }
 
+// Hopkins (2013)
+// pressure-energy formulation
 void FluidForce::calculation(std::shared_ptr<Simulation> sim)
 {
     auto & particles = sim->get_particles();

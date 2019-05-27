@@ -3,6 +3,8 @@
 #include "kernel/cubic_spline.hpp"
 #include "kernel/wendland_kernel.hpp"
 
+// 数値微分と比較する
+
 int main()
 {
     std::ios_base::sync_with_stdio(false);

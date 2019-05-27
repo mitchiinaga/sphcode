@@ -177,7 +177,7 @@ void BHTree::BHNode::assign(SPHParticle * particle, BHNode * & nodes, int & rema
     auto * child = childs[index];
     if(!child) {
         if(remaind < 0) {
-            THROW_ERROR("no more free node.");
+            THROW_ERROR("There is no free node.");
         }
         childs[index] = nodes;
         child = childs[index];

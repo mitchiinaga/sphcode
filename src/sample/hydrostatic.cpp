@@ -7,6 +7,8 @@
 namespace sph
 {
 
+// Hydrostatic Equilibrium test (Saitoh & Makino 2013)
+
 void Solver::make_hydrostatic()
 {
 #if DIM != 2

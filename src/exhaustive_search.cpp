@@ -1,4 +1,4 @@
-#include <algorithm>
+﻿#include <algorithm>
 
 #include "vector_type.hpp"
 #include "particle.hpp"
@@ -7,6 +7,7 @@
 
 namespace sph {
 
+// 全探索 (デバッグ用)
 int exhaustive_search(
     SPHParticle & p_i,
     const real kernel_size,

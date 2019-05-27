@@ -11,10 +11,10 @@
 namespace sph
 {
 
-inline void output(const SPHParticle & p, std::ofstream &out)
+inline void output(const SPHParticle & p, std::ofstream &out, const char sep = ' ')
 {
-#define OUTPUT_SCALAR(name) do { out << p.name << ' '; } while(0)
-#define OUTPUT_VECTOR(name) do { for(int i = 0; i < DIM; ++i) out << p.name[i] << ' '; } while(0)
+#define OUTPUT_SCALAR(name) do { out << p.name << sep; } while(0)
+#define OUTPUT_VECTOR(name) do { for(int i = 0; i < DIM; ++i) out << p.name[i] << sep; } while(0)
 
     OUTPUT_VECTOR(pos);
     OUTPUT_VECTOR(vel);

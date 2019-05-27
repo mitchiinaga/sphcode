@@ -7,6 +7,8 @@
 namespace sph
 {
 
+// Kelvin-Helmholtz instability (Springel 2010)
+
 void Solver::make_khi()
 {
 #if DIM != 2

@@ -35,6 +35,7 @@ inline real limiter(const real dq1, const real dq2)
     }
 }
 
+// Cha & Whitworth (2003)
 void FluidForce::calculation(std::shared_ptr<Simulation> sim)
 {
     auto & particles = sim->get_particles();
@@ -95,6 +96,8 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
             real vstar, pstar;
 
             if(m_is_2nd_order) {
+                // Murante et al. (2011)
+
                 real right[4], left[4];
                 const real delta_i = 0.5 * (1.0 - p_i.sound * dt * r_inv);
                 const real delta_j = 0.5 * (1.0 - p_j.sound * dt * r_inv);

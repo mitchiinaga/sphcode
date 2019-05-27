@@ -85,9 +85,9 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
     }
 }
 
+// Monaghan (1997)
 real FluidForce::artificial_viscosity(const SPHParticle & p_i, const SPHParticle & p_j, const vec_t & r_ij)
 {
-    // Monaghan (1997)
     const auto v_ij = p_i.vel - p_j.vel;
     const real vr = inner_product(v_ij, r_ij);
 

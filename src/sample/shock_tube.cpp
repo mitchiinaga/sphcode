@@ -7,6 +7,8 @@
 namespace sph
 {
 
+// shock tube test (e.g. Hernquist & Katz 1989)
+
 void Solver::make_shock_tube()
 {
 #if DIM != 1

@@ -7,6 +7,8 @@
 namespace sph
 {
 
+// Gresho-Chan vortex (Gresho & Chan 1990)
+
 real vortex_velocity(const real r)
 {
     if(r < 0.2) {
