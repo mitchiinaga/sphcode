@@ -25,6 +25,7 @@ OBJEXT = o
 
 TARGET = sph
 
+# Makefileの参考: https://minus9d.hatenablog.com/entry/2017/10/20/222901
 # DO NOT EDIT BELOW THIS LINE
 #-------------------------------------------------------
 
