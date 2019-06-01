@@ -1,44 +1,6 @@
 # SPHCODE
 Smoothed Particle Hydrodynamics (SPH)法のサンプルコードです。圧縮性流体専用です。
 
-## 実装
-### SPH方程式
-#### Standard SPH (density-energy formulation; Springel & Hernquist 2002, Monaghan 2002)
-最小作用の原理から導出したSPH法の方程式です。smoothing length の空間微分 (grad-h term)を考慮した方程式系になっています。
-
-#### Density Independent SPH (pressure-energy formulation; Saitoh & Makino 2013; Hopkins 2013)
-状態方程式からSPH粒子の体積を求めることによって、密度に陽に依存しない方程式にします。接触不連続面を正しく扱えるようになります。
-
-#### Godunov SPH (Inutsuka 2002; Cha & Whitworth 2003; Murante et al. 2011)
-Riemann solverを使って粒子間相互作用を計算することで、人工粘性のような計算を安定化させる数値拡散が自動的に入るようになります。
-
-### カーネル関数
-#### Cubic spline (e.g. Monaghan 1992)
-昔からよく使われているオーソドックスなカーネル関数です。
-
-#### Wendland C4 (Wendland 1995)
-Cubic splineカーネルより高次のカーネル関数です。影響半径内の粒子数が大きいときに粒子同士がくっついてしまう不安定性 (pairing instability; Dehnen & Aly 2012) を防ぐことができます。
-
-### 人工粘性
-#### signal velocity formulation (Monaghan 1997)
-Riemann solverによる数値拡散から類推して導出された人工粘性です。
-
-#### Balsara switch (Balsara 1995)
-速度の回転が発散より大きい領域で人工粘性係数を小さくすることで、シアー領域に余分な粘性が効かないようにします。
-
-#### 時間依存人工粘性係数 (Rosswog et al. 2000)
-SPH粒子それぞれの人工粘性係数を時間変化させます。圧縮領域では人工粘性係数を大きく、それ以外では小さくするようにします。
-
-### その他
-#### 人工熱伝導 (Price 2008; Wadsley et al. 2008)
-エネルギー方程式に人工的な熱伝導項を入れることで、接触不連続面での非物理的な圧力ジャンプを抑制できます。
-
-#### 自己重力 (Hernquist & Katz 1989)
-カーネル関数とsmoothing lengthによって重力ソフトニングを行います。
-
-#### Tree (Hernquist & Katz 1989)
-近傍粒子探索に木構造を使うことで、計算量のオーダーをO(N^2)からO(N logN)に減らすことができます。
-
 ## コンパイル
 次元を `include/defines.hpp` の `DIM` に設定してからコンパイルします。
 
@@ -80,6 +42,70 @@ OpenMPのスレッド数を指定します。省略した場合は使用可能�
 ```
 #### \<parameter_file\>
 パラメータを入力したjsonファイルを指定します。
+
+## 計算例
+### 衝撃波管問題
+Godunov SPH法を使用
+
+* 密度の時間発展
+
+![shocktube_gsph.gif](https://raw.githubusercontent.com/mitchiinaga/sphcode/master/images/shocktube_gsph.gif)
+
+* 厳密解との比較
+
+![shocktube_dens.gif](https://raw.githubusercontent.com/mitchiinaga/sphcode/master/images/shocktube_dens.gif)
+
+### Kelvin-Helmholtz不安定性
+* Standard SPH
+
+![khi_st.gif](https://raw.githubusercontent.com/mitchiinaga/sphcode/master/images/khi_st.gif)
+
+* Density Independent SPH
+
+![khi_di.gif](https://raw.githubusercontent.com/mitchiinaga/sphcode/master/images/khi_di.gif)
+
+### Evrard collapse
+Standard SPH法 + Balsara switch + 時間依存人工粘性
+
+![evrard_st.gif](https://raw.githubusercontent.com/mitchiinaga/sphcode/master/images/evrard_st.gif)
+
+## 実装
+### SPH方程式
+#### Standard SPH (density-energy formulation; Springel & Hernquist 2002, Monaghan 2002)
+最小作用の原理から導出したSPH法の方程式です。smoothing length の空間微分 (grad-h term)を考慮した方程式系になっています。
+
+#### Density Independent SPH (pressure-energy formulation; Saitoh & Makino 2013; Hopkins 2013)
+状態方程式からSPH粒子の体積を求めることによって、密度に陽に依存しない方程式にします。接触不連続面を正しく扱えるようになります。
+
+#### Godunov SPH (Inutsuka 2002; Cha & Whitworth 2003; Murante et al. 2011)
+Riemann solverを使って粒子間相互作用を計算することで、人工粘性のような計算を安定化させる数値拡散が自動的に入るようになります。
+
+### カーネル関数
+#### Cubic spline (e.g. Monaghan 1992)
+昔からよく使われているオーソドックスなカーネル関数です。
+
+#### Wendland C4 (Wendland 1995)
+Cubic splineカーネルより高次のカーネル関数です。影響半径内の粒子数が大きいときに粒子同士がくっついてしまう不安定性 (pairing instability; Dehnen & Aly 2012) を防ぐことができます。
+
+### 人工粘性
+#### signal velocity formulation (Monaghan 1997)
+Riemann solverによる数値拡散から類推して導出された人工粘性です。
+
+#### Balsara switch (Balsara 1995)
+速度の回転が発散より大きい領域で人工粘性係数を小さくすることで、シアー領域に余分な粘性が効かないようにします。
+
+#### 時間依存人工粘性係数 (Rosswog et al. 2000)
+SPH粒子それぞれの人工粘性係数を時間変化させます。圧縮領域では人工粘性係数を大きく、それ以外では小さくするようにします。
+
+### その他
+#### 人工熱伝導 (Price 2008; Wadsley et al. 2008)
+エネルギー方程式に人工的な熱伝導項を入れることで、接触不連続面での非物理的な圧力ジャンプを抑制できます。
+
+#### 自己重力 (Hernquist & Katz 1989)
+カーネル関数とsmoothing lengthによって重力ソフトニングを行います。
+
+#### Tree (Hernquist & Katz 1989)
+近傍粒子探索に木構造を使うことで、計算量のオーダーをO(N^2)からO(N logN)に減らすことができます。
 
 ## パラメータ
 デフォルト値が空欄のパラメータは、必ず指定する必要があります。
