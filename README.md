@@ -66,7 +66,7 @@ Makefileは [Makefileの書き方に関する備忘録 その4 - minus9d's diary
 |shock_tube|1|衝撃波管問題 (e.g. Hernquist & Katz 1989)|
 |pairing_instability|2|粒子の初期配置をグリッド状から少しだけずらしています。カーネル関数の設定によっては粒子同士がくっついてしまいます。|
 |gresho_chan_vortex|2|Gresho-Chan vortex (Gresho & Chan 1990)。圧力勾配力と遠心力が釣り合うような初期条件です。|
-|hydrostatic|2|静水圧 (Saitoh & Makino 2013)。圧力は全領域で一定ですが、高密度領域を低密度領域が囲うような粒子配置となっています。|
+|hydrostatic|2|静水圧 (Saitoh & Makino 2013)。圧力は全領域で一定ですが密度差があり、高密度領域を低密度領域が囲うような粒子配置となっています。|
 |khi|2|Kelvin-Helmholtz 不安定性 (Springel 2010)|
 |evrard|3|Evrard collapse (Evrard 1988)。自己重力入りのテスト計算です。|
 
