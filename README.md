@@ -91,7 +91,7 @@ OpenMPのスレッド数を指定します。省略した場合は使用可能�
 |endTime|real|計算終了時刻||
 |outputTime|real|粒子データの出力間隔を時間で指定|(endTime - startTime) / 100|
 |energyTime|real|エネルギーの出力間隔を時間で指定|outputTime|
-|SPHType|string|SPH方程式の指定。"ssph", "disph", "gsph"のいずれか|ssph|
+|SPHType|string|SPH方程式の指定。"ssph", "disph", "gsph"のいずれか|"ssph"|
 |cflSound|real|音速による時間刻み制限を決めるパラメータ|0.3|
 |cflForce|real|粒子に働く力による時間刻み制限を決めるパラメータ|0.125|
 |avAlpha|real|初期人工粘性係数|1|
