@@ -81,6 +81,41 @@ OpenMPのスレッド数を指定します。省略した場合は使用可能�
 #### \<parameter_file\>
 パラメータを入力したjsonファイルを指定します。
 
+## パラメータ
+デフォルト値が空欄のパラメータは、必ず指定する必要があります。
+
+|パラメータ|型|説明|デフォルト値|
+|:---|:---|:---|:---|
+|outputDirectory|string|結果ファイルの出力先ディレクトリ||
+|startTime|real|計算開始時刻|0|
+|endTime|real|計算終了時刻||
+|outputTime|real|粒子データの出力間隔を時間で指定|(endTime - startTime) / 100|
+|energyTime|real|エネルギーの出力間隔を時間で指定|outputTime|
+|SPHType|string|SPH方程式の指定。"ssph", "disph", "gsph"のいずれか|ssph|
+|cflSound|real|音速による時間刻み制限を決めるパラメータ|0.3|
+|cflForce|real|粒子に働く力による時間刻み制限を決めるパラメータ|0.125|
+|avAlpha|real|初期人工粘性係数|1|
+|useBalsaraSwitch|bool|Balsara switchを有効にする|true|
+|useTimeDependentAV|bool|時間依存人工粘性を有効にする|false|
+|alphaMax|real|時間依存人工粘性の係数の上限値|2.0|
+|alphaMin|real|時間依存人工粘性の係数の下限値|0.1|
+|epsilonAV|real|時間依存人工粘性の係数の減衰タイムスケールを決めるパラメータ|0.2|
+|useArtificialConductivity|bool|人工熱伝導を使用する|false|
+|alphaAC|real|人工熱伝導係数|1.0|
+|maxTreeLevel|int|ツリーの最大レベル|20|
+|leafParticleNumber|int|ツリーの葉ノードに入る粒子数の最大値|4|
+|neighborNumber|int|近傍粒子数|32|
+|gamma|real|比熱比||
+|kernel|string|カーネル関数。"cubic_spline"または"wendland"|"cubic_spline"|
+|iterativeSmoothingLength|bool|smoothing lengthをNewton法で求める|true|
+|periodic|bool|周期境界を使用する|false|
+|rangeMax|real array|周期境界使用時の座標の上限||
+|rangeMin|real array|周期境界使用時の座標の下限||
+|useGravity|bool|重力計算を有効にする|false|
+|G|real|重力定数|1|
+|theta|real|ツリー法で使用する見込み角|0.5|
+|use2ndOrderGSPH|bool|Godunov SPH法でMUSCL補間を使用する|true|
+
 ## 参考文献
 * Balsara, D. S. (1995). von Neumann stability analysis of smoothed particle hydrodynamics--suggestions for optimal algorithms. Journal of Computational Physics, 121(2), 357–372. https://doi.org/10.1016/S0021-9991(95)90221-X
 * Cha, S. H., & Whitworth, A. P. (2003). Implementations and tests of Godunov-type particle hydrodynamics. Monthly Notices of the Royal Astronomical Society, 340(1), 73–90. https://doi.org/10.1046/j.1365-8711.2003.06266.x
