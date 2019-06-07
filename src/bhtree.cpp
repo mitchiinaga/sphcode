@@ -236,7 +236,7 @@ void BHTree::BHNode::neighbor_search(const SPHParticle & p_i, std::vector<int> &
     const vec_t & r_i = p_i.pos;
     const real h = is_ij ? std::max(p_i.sml, kernel_size) : p_i.sml;
     const real h2 = h * h;
-    const real l2 = sqr(edge + h);
+    const real l2 = sqr(edge * 0.5 + h);
     const vec_t d = periodic->calc_r_ij(r_i, center);
     real dx2_max = sqr(d[0]);
     for(int i = 1; i < DIM; ++i) {
@@ -311,7 +311,7 @@ void BHTree::BHNode::calc_force(SPHParticle & p_i, const real theta2, const real
             while(p) {
                 const vec_t & r_j = p->pos;
                 const vec_t r_ij = periodic->calc_r_ij(r_i, r_j);
-                const real r = std::sqrt(d2);
+                const real r = std::abs(r_ij);
                 p_i.phi -= g_constant * p->mass * (f(r, p_i.sml) + f(r, p->sml)) * 0.5;
                 p_i.acc -= r_ij * (g_constant * p->mass * (g(r, p_i.sml) + g(r, p->sml)) * 0.5);
                 p = p->next;
