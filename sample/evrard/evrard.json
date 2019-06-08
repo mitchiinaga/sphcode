@@ -12,5 +12,5 @@
     "N" : 30,
     "periodic" : false,
     "useGravity" : true,
-    "SPHType" : "ssph"
+    "SPHType" : "disph"
 }

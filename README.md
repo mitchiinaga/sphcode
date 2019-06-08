@@ -65,9 +65,9 @@ Godunov SPH法を使用
 ![khi_di.gif](https://raw.githubusercontent.com/mitchiinaga/sphcode/master/images/khi_di.gif)
 
 ### Evrard collapse
-Standard SPH法 + Balsara switch + 時間依存人工粘性
+Density Independent SPH法 + Balsara switch + 時間依存人工粘性
 
-![evrard_st.gif](https://raw.githubusercontent.com/mitchiinaga/sphcode/master/images/evrard_st.gif)
+![evrard_di.gif](https://raw.githubusercontent.com/mitchiinaga/sphcode/master/images/evrard_di.gif)
 
 ## 実装
 ### SPH方程式
