@@ -129,7 +129,7 @@ SPH粒子それぞれの人工粘性係数を時間変化させます。圧縮�
 |useArtificialConductivity|bool|人工熱伝導を使用する|false|
 |alphaAC|real|人工熱伝導係数|1.0|
 |maxTreeLevel|int|ツリーの最大レベル|20|
-|leafParticleNumber|int|ツリーの葉ノードに入る粒子数の最大値|4|
+|leafParticleNumber|int|ツリーの葉ノードに入る粒子数の最大値|1|
 |neighborNumber|int|近傍粒子数|32|
 |gamma|real|比熱比||
 |kernel|string|カーネル関数。"cubic_spline"または"wendland"|"cubic_spline"|

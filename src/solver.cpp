@@ -238,7 +238,7 @@ void Solver::read_parameterfile(const char * filename)
 
     // Tree
     m_param->tree.max_level = input.get<int>("maxTreeLevel", 20);
-    m_param->tree.leaf_particle_num = input.get<int>("leafParticleNumber", 4);
+    m_param->tree.leaf_particle_num = input.get<int>("leafParticleNumber", 1);
 
     // Physics
     m_param->physics.neighbor_number = input.get<int>("neighborNumber", 32);
