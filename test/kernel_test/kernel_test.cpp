@@ -37,8 +37,7 @@ int main()
             for(real x = dx * 0.5; x < 1.0; x += dx) {
                 const vec_t r(x);
                 auto dw1 = cs.dhw(x, 1.0);
-                auto dw2 = (cs.w(x, 1.0 + dx * 0.5) - cs.w(x, 1.0 - dx * 0.5)) / (dx * 0.5);
-                // f(x) = g(x/2) => (f(x+dx/2) - f(x-dx/2)) / dx = (g(x/2 + dx/4) - g(x/2 - dx/4)) / (dx/2) / 2
+                auto dw2 = (cs.w(x, 1.0 + dx * 0.5) - cs.w(x, 1.0 - dx * 0.5)) / dx;
                 error += std::abs(dw1 - dw2);
             }
             error /= n;

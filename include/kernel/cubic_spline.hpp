@@ -46,7 +46,7 @@ public:
     {
         const real h_ = h * 0.5;
         const real q = r / h_;
-        return sigma_cubic / (powh(h_) * h_) * (sqr((std::abs(2.0 - q) + 2.0 - q) * 0.5) * ((3. + DIM) * 0.25 * q - 0.5 * DIM)
+        return 0.5 * sigma_cubic / (powh(h_) * h_) * (sqr((std::abs(2.0 - q) + 2.0 - q) * 0.5) * ((3. + DIM) * 0.25 * q - 0.5 * DIM)
             + sqr((std::abs(1.0 - q) + 1.0 - q) * 0.5) * ((-3.0 - DIM) * q + DIM));
     }
 };
