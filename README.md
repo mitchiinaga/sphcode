@@ -9,10 +9,10 @@ Smoothed Particle Hydrodynamics (SPH)法のサンプルコードです。圧縮�
 * 例: `BOOST_INC_PATH=C:\boost\boost_1_67_0\include\boost-1_67`
 
 ### GCC
-Linux環境では(多分) Makefileを使ってコンパイルできます。あまりちゃんと動作確認してません。
+Linux環境ではMakefileを使ってコンパイルできます。あまりちゃんと動作確認してません。
 バージョン7.3.0でコンパイルしました。
 
-Makefileは [Makefileの書き方に関する備忘録 その4 - minus9d's diary](https://minus9d.hatenablog.com/entry/2017/10/20/222901) を参考にしました。
+Makefileは [Makefileの書き方に関する備忘録 その4 - minus9d's diary](https://minus9d.hatenablog.com/entry/2017/10/20/222901) を参考にしています。
 
 ## 実行
 ### サンプル実行
@@ -78,7 +78,7 @@ Density Independent SPH法 + Balsara switch + 時間依存人工粘性
 状態方程式からSPH粒子の体積を求めることによって、密度に陽に依存しない方程式にします。接触不連続面を正しく扱えるようになります。
 
 #### Godunov SPH (Inutsuka 2002; Cha & Whitworth 2003; Murante et al. 2011)
-Riemann solverを使って粒子間相互作用を計算することで、人工粘性のような計算を安定化させる数値拡散が自動的に入るようになります。
+Riemann solverを使って粒子間相互作用を計算することで、計算を安定化させる数値拡散が自動的に入るようになります。
 
 ### カーネル関数
 #### Cubic spline (e.g. Monaghan 1992)
