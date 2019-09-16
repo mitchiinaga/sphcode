@@ -362,6 +362,9 @@ void Solver::initialize()
 
     if(m_param->time.use_indivisual_timestep) {
         m_timestep = std::make_shared<indivisual::Timestep>();
+        std::vector<std::string> names;
+        names.push_back("dt");
+        m_sim->add_scalar_array(names);
     } else {
         m_timestep = std::make_shared<fixed::Timestep>();
     }
