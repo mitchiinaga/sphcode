@@ -30,6 +30,7 @@ public:
     int id;
     int neighbor;
     int timeid;
+    real v_sig;
     SPHParticle *next = nullptr;
 };
 

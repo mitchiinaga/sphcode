@@ -28,6 +28,7 @@ inline void output(const SPHParticle & p, std::ofstream &out, const char sep = '
     OUTPUT_SCALAR(neighbor);
     OUTPUT_SCALAR(alpha);
     OUTPUT_SCALAR(gradh);
+    OUTPUT_SCALAR(timeid);
     out << std::endl;
 }
 

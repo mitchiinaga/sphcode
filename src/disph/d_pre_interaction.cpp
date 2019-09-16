@@ -32,8 +32,6 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
     const real dt = sim->get_dt();
     auto * tree = sim->get_tree().get();
 
-    omp_real h_per_v_sig(std::numeric_limits<real>::max());
-
 #pragma omp parallel for
     for(int i = 0; i < num; ++i) {
         auto & p_i = particles[i];
@@ -97,11 +95,7 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
         // f_ij = 1 - p_i.gradh / (p_j.mass * p_j.ene)
         p_i.gradh = p_i.sml / (DIM * n_i) * dh_pres_i / (1.0 + p_i.sml / (DIM * n_i) * dh_n_i);
         p_i.neighbor = n_neighbor;
-
-        const real h_per_v_sig_i = p_i.sml / v_sig_max;
-        if(h_per_v_sig.get() > h_per_v_sig_i) {
-            h_per_v_sig.get() = h_per_v_sig_i;
-        }
+        p_i.v_sig = v_sig_max;
 
         // Artificial viscosity
         if(m_use_balsara_switch && DIM != 1) {
@@ -153,8 +147,6 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
             p_i.alpha = (p_i.alpha + dt * tau_inv * m_alpha_min + s_i * dt * m_alpha_max) / (1.0 + dt * tau_inv + s_i * dt);
         }
     }
-
-    sim->set_h_per_v_sig(h_per_v_sig.min());
 
 #ifndef EXHAUSTIVE_SEARCH
     tree->set_kernel();

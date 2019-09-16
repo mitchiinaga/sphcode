@@ -37,8 +37,6 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
     auto * kernel = sim->get_kernel().get();
     auto * tree = sim->get_tree().get();
 
-    omp_real h_per_v_sig(std::numeric_limits<real>::max());
-
     // for MUSCL
     auto & grad_d = sim->get_vector_array("density");
     auto & grad_p = sim->get_vector_array("pressure");
@@ -103,11 +101,7 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
         p_i.dens = dens_i;
         p_i.pres = (m_gamma - 1.0) * dens_i * p_i.ene;
         p_i.neighbor = n_neighbor;
-
-        const real h_per_v_sig_i = p_i.sml / v_sig_max;
-        if(h_per_v_sig.get() > h_per_v_sig_i) {
-            h_per_v_sig.get() = h_per_v_sig_i;
-        }
+        p_i.v_sig = v_sig_max;
 
         // MUSCL法のための勾配計算
         if(!m_is_2nd_order) {
@@ -135,8 +129,6 @@ void PreInteraction::calculation(std::shared_ptr<Simulation> sim)
             grad_v[k][i] = dv[k] * rho_inv;
         }
     }
-
-    sim->set_h_per_v_sig(h_per_v_sig.min());
 
 #ifndef EXHAUSTIVE_SEARCH
     tree->set_kernel();

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include "module.hpp"
 
 namespace sph
@@ -22,6 +23,8 @@ public:
 
 namespace indivisual {
 class Timestep : public sph::TimeStep {
+    std::vector<int> timeids;
+    int current;
 public:
     void calculation(std::shared_ptr<Simulation> sim) override;
 };
