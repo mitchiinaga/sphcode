@@ -30,10 +30,14 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
     const int num = sim->get_particle_num();
     auto * kernel = sim->get_kernel().get();
     auto * tree = sim->get_tree().get();
+    auto timeid = sim->get_timeid();
 
-#pragma omp parallel for
+#pragma omp parallel for schedule(dynamic)
     for(int i = 0; i < num; ++i) {
         auto & p_i = particles[i];
+        if(!(p_i.timeid & timeid)) {
+            continue;
+        }
         std::vector<int> neighbor_list(m_neighbor_number * neighbor_list_size);
         
         // neighbor search

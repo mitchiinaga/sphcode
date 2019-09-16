@@ -24,6 +24,7 @@ struct SPHParameters {
         real end;
         real output;
         real energy;
+        bool use_indivisual_timestep;
     } time;
 
     SPHType type;

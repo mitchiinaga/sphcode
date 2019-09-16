@@ -11,5 +11,6 @@
     "rangeMax" : [1.5],
     "rangeMin" : [-0.5],
     "useTimeDependentAV" : false,
+    "useIndivisualTimestep": false,
     "SPHType" : "ssph"
 }

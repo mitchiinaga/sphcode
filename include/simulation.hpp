@@ -30,6 +30,7 @@ class Simulation {
     ADD_MEMBER(std::shared_ptr<KernelFunction>, kernel);
     ADD_MEMBER(std::shared_ptr<Periodic>, periodic);
     ADD_MEMBER(std::shared_ptr<BHTree>, tree);
+    ADD_MEMBER(int, timeid);
 
     std::unordered_map<std::string, std::vector<real>> additional_scalar_array;
     std::unordered_map<std::string, std::vector<vec_t>> additional_vector_array;

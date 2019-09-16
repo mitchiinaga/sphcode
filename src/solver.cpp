@@ -65,6 +65,9 @@ Solver::Solver(int argc, char * argv[])
     WRITE_LOG << "* end time           = " << m_param->time.end;
     WRITE_LOG << "* output time        = " << m_param->time.output;
     WRITE_LOG << "* enerty output time = " << m_param->time.energy;
+    if(m_param->time.use_indivisual_timestep) {
+        WRITE_LOG << "* use indivisual timestep";
+    }
 
     switch(m_param->type) {
     case SPHType::SSPH:
@@ -200,6 +203,7 @@ void Solver::read_parameterfile(const char * filename)
     }
     m_param->time.output = input.get<real>("outputTime", (m_param->time.end - m_param->time.start) / 100);
     m_param->time.energy = input.get<real>("energyTime", m_param->time.output);
+    m_param->time.use_indivisual_timestep = input.get<bool>("useIndivisualTimestep", false);
 
     // type
     std::string sph_type = input.get<std::string>("SPHType", "ssph");
@@ -356,7 +360,12 @@ void Solver::initialize()
 
     make_initial_condition();
 
-    m_timestep = std::make_shared<TimeStep>();
+    if(m_param->time.use_indivisual_timestep) {
+        m_timestep = std::make_shared<indivisual::Timestep>();
+    } else {
+        m_timestep = std::make_shared<fixed::Timestep>();
+    }
+
     if(m_param->type == SPHType::SSPH) {
         m_pre = std::make_shared<PreInteraction>();
         m_fforce = std::make_shared<FluidForce>();
@@ -401,6 +410,7 @@ void Solver::initialize()
         p[i].alpha = alpha;
         p[i].balsara = 1.0;
         p[i].sound = std::sqrt(c_sound * p[i].ene);
+        p[i].timeid = 1;
     }
 
 #ifndef EXHAUSTIVE_SEARCH
@@ -409,6 +419,7 @@ void Solver::initialize()
     tree->make(p, num);
 #endif
 
+    m_sim->set_timeid(1);
     m_pre->calculation(m_sim);
     m_fforce->calculation(m_sim);
     m_gforce->calculation(m_sim);
@@ -462,11 +473,16 @@ void Solver::correct()
     const real dt = m_sim->get_dt();
     const real gamma = m_param->physics.gamma;
     const real c_sound = gamma * (gamma - 1.0);
+    const auto timeid = m_sim->get_timeid();
 
     assert(p.size() == num);
 
-#pragma omp parallel for
+#pragma omp parallel for schedule(dynamic)
     for(int i = 0; i < num; ++i) {
+        if(!(p[i].timeid & timeid)) {
+            continue;
+        }
+
         p[i].vel = p[i].vel_p + p[i].acc * (0.5 * dt);
         p[i].ene = p[i].ene_p + p[i].dene * (0.5 * dt);
         p[i].sound = std::sqrt(c_sound * p[i].ene);

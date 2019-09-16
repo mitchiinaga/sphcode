@@ -29,6 +29,7 @@ public:
 
     int id;
     int neighbor;
+    int timeid;
     SPHParticle *next = nullptr;
 };
 

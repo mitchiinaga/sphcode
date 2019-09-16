@@ -44,6 +44,7 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
     auto * kernel = sim->get_kernel().get();
     auto * tree = sim->get_tree().get();
     const real dt = sim->get_dt();
+    auto timeid = sim->get_timeid();
 
     // for MUSCL
     auto & grad_d = sim->get_vector_array("density");
@@ -58,9 +59,12 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
 #endif
     };
 
-#pragma omp parallel for
+#pragma omp parallel for schedule(dynamic)
     for(int i = 0; i < num; ++i) {
         auto & p_i = particles[i];
+        if(!(p_i.timeid & timeid)) {
+            continue;
+        }
         std::vector<int> neighbor_list(m_neighbor_number * neighbor_list_size);
         
         // neighbor search

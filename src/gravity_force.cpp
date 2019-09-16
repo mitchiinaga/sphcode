@@ -63,10 +63,15 @@ void GravityForce::calculation(std::shared_ptr<Simulation> sim)
     auto * tree = sim->get_tree().get();
 #endif
 
-#pragma omp parallel for
+    auto timeid = sim->get_timeid();
+
+#pragma omp parallel for schedule(dynamic)
     for(int i = 0; i < num; ++i) {
         auto & p_i = particles[i];
         
+        if(!(p_i.timeid & timeid)) {
+            continue;
+        }
 #ifdef EXHAUSTIVE_SEARCH
         real phi = 0.0;
         vec_t force(0.0);
