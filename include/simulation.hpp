@@ -26,6 +26,7 @@ class Simulation {
     ADD_MEMBER(int, particle_num);
     ADD_MEMBER(real, time);
     ADD_MEMBER(real, dt);
+    ADD_MEMBER(real, max_dt);
     ADD_MEMBER(std::shared_ptr<KernelFunction>, kernel);
     ADD_MEMBER(std::shared_ptr<Periodic>, periodic);
     ADD_MEMBER(std::shared_ptr<BHTree>, tree);

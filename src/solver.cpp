@@ -1,4 +1,4 @@
-﻿#include <cassert>
+#include <cassert>
 
 #include <iostream>
 #include <chrono>
@@ -414,6 +414,8 @@ void Solver::initialize()
         p[i].balsara = 1.0;
         p[i].sound = std::sqrt(c_sound * p[i].ene);
         p[i].timeid = 1;
+        p[i].vel_p = p[i].vel;
+        p[i].ene_p = p[i].ene;
     }
 
 #ifndef EXHAUSTIVE_SEARCH
@@ -448,19 +450,24 @@ void Solver::predict()
     const int num = m_sim->get_particle_num();
     auto * periodic = m_sim->get_periodic().get();
     const real dt = m_sim->get_dt();
+    const real dt_max = m_sim->get_max_dt();
     const real gamma = m_param->physics.gamma;
     const real c_sound = gamma * (gamma - 1.0);
+    const auto timeid = m_sim->get_timeid();
 
     assert(p.size() == num);
 
-#pragma omp parallel for
+#pragma omp parallel for schedule(dynamic)
     for(int i = 0; i < num; ++i) {
-        // k -> k+1/2
-        p[i].vel_p = p[i].vel + p[i].acc * (0.5 * dt);
-        p[i].ene_p = p[i].ene + p[i].dene * (0.5 * dt);
+        if((p[i].timeid & timeid)) {
+            // k -> k+1/2
+            const real dt_half = dt_max / (p[i].timeid + 1);
+            p[i].vel_p += p[i].acc * dt_half;
+            p[i].ene_p += p[i].dene * dt_half;
+        }
 
         // k -> k+1
-        p[i].pos += p[i].vel_p * dt;
+        p[i].pos += p[i].vel * dt + p[i].acc * (dt * dt * 0.5);
         p[i].vel += p[i].acc * dt;
         p[i].ene += p[i].dene * dt;
         p[i].sound = std::sqrt(c_sound * p[i].ene);
@@ -473,7 +480,7 @@ void Solver::correct()
 {
     auto & p = m_sim->get_particles();
     const int num = m_sim->get_particle_num();
-    const real dt = m_sim->get_dt();
+    const real dt_max = m_sim->get_max_dt();
     const real gamma = m_param->physics.gamma;
     const real c_sound = gamma * (gamma - 1.0);
     const auto timeid = m_sim->get_timeid();
@@ -486,8 +493,11 @@ void Solver::correct()
             continue;
         }
 
-        p[i].vel = p[i].vel_p + p[i].acc * (0.5 * dt);
-        p[i].ene = p[i].ene_p + p[i].dene * (0.5 * dt);
+        const real dt_half = dt_max / (p[i].timeid + 1);
+        p[i].vel = p[i].vel_p + p[i].acc * dt_half;
+        p[i].ene = p[i].ene_p + p[i].dene * dt_half;
+        p[i].vel_p = p[i].vel;
+        p[i].ene_p = p[i].ene;
         p[i].sound = std::sqrt(c_sound * p[i].ene);
     }
 }

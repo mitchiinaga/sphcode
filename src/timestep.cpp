@@ -42,7 +42,9 @@ void Timestep::calculation(std::shared_ptr<Simulation> sim)
         }
     }
 
-    sim->set_dt(dt_min.min());
+    const real dt = dt_min.min();
+    sim->set_dt(dt);
+    sim->set_max_dt(dt);
 }
 }
 
@@ -122,9 +124,15 @@ void Timestep::calculation(std::shared_ptr<Simulation> sim)
             }
         }
 
+        int max_id = 1;
+        for(int i = 0; i < level; ++i) {
+            max_id <<= 1;
+            ++max_id;
+        }
+
         // TODO: ‚È‚ñ‚Æ‚©‚·‚é2
         auto calc_timeid = [&](const real dt) {
-            int id_i = pow2(level);
+            int id_i = max_id;
             int i = 0;
             while(dt_list[i] * 2 < dt) {
                 i++;
@@ -144,6 +152,7 @@ void Timestep::calculation(std::shared_ptr<Simulation> sim)
         current = 0;
         sim->set_timeid(timeids[current]);
         sim->set_dt(dt_min);
+        sim->set_max_dt(dt_min * pow2(level));
     } else {
         current++;
         sim->set_timeid(timeids[current]);
