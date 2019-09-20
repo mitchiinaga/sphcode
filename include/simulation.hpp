@@ -32,6 +32,7 @@ class Simulation {
     ADD_MEMBER(std::shared_ptr<BHTree>, tree);
     ADD_MEMBER(int, timeid);
 
+    std::unordered_map<std::string, std::vector<int>> additional_int_array;
     std::unordered_map<std::string, std::vector<real>> additional_scalar_array;
     std::unordered_map<std::string, std::vector<vec_t>> additional_vector_array;
 
@@ -39,8 +40,10 @@ public:
     Simulation(std::shared_ptr<SPHParameters> param);
     void update_time();
     void make_tree();
+    void add_int_array(const std::vector<std::string> & names);
     void add_scalar_array(const std::vector<std::string> & names);
     void add_vector_array(const std::vector<std::string> & names);
+    std::vector<int> & get_int_array(const std::string & name);
     std::vector<real> & get_scalar_array(const std::string & name);
     std::vector<vec_t> & get_vector_array(const std::string & name);
 };

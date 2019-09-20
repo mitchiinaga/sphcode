@@ -3,6 +3,7 @@
 #include "particle.hpp"
 #include "simulation.hpp"
 #include "openmp.hpp"
+#include "bhtree.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -50,6 +51,12 @@ void Timestep::calculation(std::shared_ptr<Simulation> sim)
 
 namespace indivisual
 {
+
+void Timestep::initialize(std::shared_ptr<SPHParameters> param)
+{
+    sph::TimeStep::initialize(param);
+    m_neighbor_number = param->physics.neighbor_number;
+}
 
 void Timestep::calculation(std::shared_ptr<Simulation> sim)
 {
@@ -106,15 +113,15 @@ void Timestep::calculation(std::shared_ptr<Simulation> sim)
 
         // timeids�̍쐬
         int id = pow2(level);
-        if(timeids.size() != id) {
-            timeids.resize(id);
+        if(m_timeids.size() != id) {
+            m_timeids.resize(id);
             int interval = 2;
             int loop = 0;
 
             while(id > 0) {
                 int i = pow2(loop) - 1;
-                while(i < timeids.size()) {
-                    timeids[i] = id;
+                while(i < m_timeids.size()) {
+                    m_timeids[i] = id;
                     i += interval;
                 }
 
@@ -149,13 +156,48 @@ void Timestep::calculation(std::shared_ptr<Simulation> sim)
             p_i.timeid = calc_timeid(dt_i);
         }
 
-        current = 0;
-        sim->set_timeid(timeids[current]);
+        // Saitoh & Makino (2009)
+        auto & timeids_tmp = sim->get_int_array("timeid_tmp");
+        auto * tree = sim->get_tree().get();
+#pragma omp parallel
+        {
+#pragma omp for
+        for(int i = 0; i < num; ++i) {
+            auto & p_i = particles[i];
+            std::vector<int> neighbor_list(m_neighbor_number * neighbor_list_size);
+
+            // neighbor search
+#ifdef EXHAUSTIVE_SEARCH
+            int const n_neighbor = exhaustive_search(p_i, p_i.sml, particles, num, neighbor_list, m_neighbor_number * neighbor_list_size, periodic, true);
+#else
+            int const n_neighbor = tree->neighbor_search(p_i, neighbor_list, particles, true);
+#endif
+            int id_i = p_i.timeid;
+            int id_max = p_i.timeid << 3;
+            for(int n = 0; n < n_neighbor; ++n) {
+                int const j = neighbor_list[n];
+                auto & p_j = particles[j];
+                while(p_j.timeid > id_max) {
+                    id_i <<= 1;
+                    id_i++;
+                    id_max <<= 1;
+                }
+            }
+            timeids_tmp[i] = id_i;
+        }
+#pragma omp for
+        for(int i = 0; i < num; ++i) {
+            particles[i].timeid = timeids_tmp[i];
+        }
+        }
+
+        m_current = 0;
+        sim->set_timeid(m_timeids[m_current]);
         sim->set_dt(dt_min);
         sim->set_max_dt(dt_min * pow2(level));
     } else {
-        current++;
-        sim->set_timeid(timeids[current]);
+        m_current++;
+        sim->set_timeid(m_timeids[m_current]);
     }
 }
 }

@@ -11,7 +11,7 @@ protected:
     real c_sound; // dt_s = c_sound * h / c
     real c_force; // dt_f = c_force * sqrt(h / a)
 public:
-    void initialize(std::shared_ptr<SPHParameters> param) override;
+    virtual void initialize(std::shared_ptr<SPHParameters> param) override;
 };
 
 namespace fixed {
@@ -23,9 +23,11 @@ public:
 
 namespace indivisual {
 class Timestep : public sph::TimeStep {
-    std::vector<int> timeids;
-    int current;
+    std::vector<int> m_timeids;
+    int m_current;
+    int m_neighbor_number;
 public:
+    void initialize(std::shared_ptr<SPHParameters> param) override;
     void calculation(std::shared_ptr<Simulation> sim) override;
 };
 }
