@@ -1,0 +1,25 @@
+target_sources(sph
+  PUBLIC
+    bhtree.hpp
+    defines.hpp
+    exception.hpp
+    exhaustive_search.hpp
+    fluid_force.hpp
+    gravity_force.hpp
+    logger.hpp
+    module.hpp
+    openmp.hpp
+    output.hpp
+    parameters.hpp
+    particle.hpp
+    periodic.hpp
+    pre_interaction.hpp
+    simulation.hpp
+    solver.hpp
+    timestep.hpp
+    vector_type.hpp
+  )
+
+add_subdirectory(disph)
+add_subdirectory(gsph)
+add_subdirectory(kernel)
