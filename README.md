@@ -8,11 +8,20 @@ Smoothed Particle Hydrodynamics (SPH)法のサンプルコードです。圧縮�
 `sph.sln` を開いてコンパイルします。環境変数 `BOOST_INC_PATH` にBoostのパスを設定しておいてください。
 * 例: `BOOST_INC_PATH=C:\boost\boost_1_67_0\include\boost-1_67`
 
-### GCC
+### Makefile
 Linux環境ではMakefileを使ってコンパイルできます。あまりちゃんと動作確認してません。
-バージョン7.3.0でコンパイルしました。
+GCCバージョン7.4.0でコンパイルチェックしています。
 
-Makefileは [Makefileの書き方に関する備忘録 その4 - minus9d's diary](https://minus9d.hatenablog.com/entry/2017/10/20/222901) を参考にしています。
+[Makefileの書き方に関する備忘録 その4 - minus9d's diary](https://minus9d.hatenablog.com/entry/2017/10/20/222901) を参考にしています。
+
+### CMake
+次のコマンドでビルドします。
+```Shell
+mkdir build
+cd build
+cmake ..
+make
+```
 
 ## 実行
 ### サンプル実行
