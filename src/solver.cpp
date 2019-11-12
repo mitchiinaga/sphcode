@@ -372,14 +372,14 @@ void Solver::initialize()
     // GSPH
     if(m_param->type == SPHType::GSPH) {
         std::vector<std::string> names;
-        names.push_back("density");
-        names.push_back("pressure");
-        names.push_back("velocity_0");
+        names.push_back("grad_density");
+        names.push_back("grad_pressure");
+        names.push_back("grad_velocity_0");
 #if DIM == 2
-        names.push_back("velocity_1");
+        names.push_back("grad_velocity_1");
 #elif DIM == 3
-        names.push_back("velocity_1");
-        names.push_back("velocity_2");
+        names.push_back("grad_velocity_1");
+        names.push_back("grad_velocity_2");
 #endif
         m_sim->add_vector_array(names);
     }

@@ -26,6 +26,7 @@ Simulation::Simulation(std::shared_ptr<SPHParameters> param)
     m_tree->initialize(param);
 
     m_time = param->time.start;
+    m_dt = 0.0;
 }
 
 void Simulation::update_time()

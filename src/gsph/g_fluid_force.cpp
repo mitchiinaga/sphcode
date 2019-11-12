@@ -46,15 +46,15 @@ void FluidForce::calculation(std::shared_ptr<Simulation> sim)
     const real dt = sim->get_dt();
 
     // for MUSCL
-    auto & grad_d = sim->get_vector_array("density");
-    auto & grad_p = sim->get_vector_array("pressure");
+    auto & grad_d = sim->get_vector_array("grad_density");
+    auto & grad_p = sim->get_vector_array("grad_pressure");
     vec_t * grad_v[DIM] = {
-        sim->get_vector_array("velocity_0").data(),
+        sim->get_vector_array("grad_velocity_0").data(),
 #if DIM == 2
-        sim->get_vector_array("velocity_1").data(),
+        sim->get_vector_array("grad_velocity_1").data(),
 #elif DIM == 3
-        sim->get_vector_array("velocity_1").data(),
-        sim->get_vector_array("velocity_2").data(),
+        sim->get_vector_array("grad_velocity_1").data(),
+        sim->get_vector_array("grad_velocity_2").data(),
 #endif
     };
 
